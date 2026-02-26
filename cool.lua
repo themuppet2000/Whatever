@@ -1,5 +1,4 @@
--- DiddysCheatGUI - Updated with working ESP & Aimbot (2025 edition)
-
+-- DiddysCheatGUI - Updated with working ESP & Aimbot + GET EVERY TOOL (2025 edition)
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -24,7 +23,6 @@ gui.DisplayOrder = 2147483647
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local remoteBlacklist = {"PlayEmote", "SendNotificationInfo"}
-
 local function isBlacklisted(name)
 	name = name:lower()
 	for _, word in ipairs(remoteBlacklist) do
@@ -34,9 +32,8 @@ local function isBlacklisted(name)
 end
 
 -- ────────────────────────────────────────────────────────────────
--- Main Frame & UI Setup (your original layout - kept mostly same)
+-- Main Frame & UI Setup
 -- ────────────────────────────────────────────────────────────────
-
 local main = Instance.new("Frame")
 main.Size = UDim2.new(0.38, 0, 0.75, 0)
 main.Position = UDim2.new(0.31, 0, -1, 0)
@@ -46,7 +43,6 @@ main.ClipsDescendants = true
 main.Visible = false
 main.Parent = gui
 Instance.new("UICorner", main).CornerRadius = UDim.new(0, 14)
-
 local stroke = Instance.new("UIStroke", main)
 stroke.Color = Color3.fromRGB(70, 110, 200)
 stroke.Thickness = 1.5
@@ -58,7 +54,6 @@ titleBar.Size = UDim2.new(1, 0, 0, 48)
 titleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 48)
 titleBar.BorderSizePixel = 0
 Instance.new("UICorner", titleBar).CornerRadius = UDim.new(0, 14)
-
 local title = Instance.new("TextLabel", titleBar)
 title.Size = UDim2.new(0.65, 0, 1, 0)
 title.Position = UDim2.new(0.035, 0, 0, 0)
@@ -68,7 +63,6 @@ title.TextColor3 = Color3.fromRGB(225, 240, 255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 24
 title.TextXAlignment = Enum.TextXAlignment.Left
-
 local status = Instance.new("TextLabel", titleBar)
 status.Size = UDim2.new(0.32, 0, 1, 0)
 status.Position = UDim2.new(0.56, 0, 0, 0)
@@ -108,13 +102,11 @@ titleBar.InputBegan:Connect(function(input)
 		end)
 	end
 end)
-
 titleBar.InputChanged:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 		dragInput = input
 	end
 end)
-
 UserInputService.InputChanged:Connect(function(input)
 	if input == dragInput and dragging then
 		local delta = input.Position - dragStart
@@ -127,11 +119,9 @@ local tabBar = Instance.new("Frame", main)
 tabBar.Size = UDim2.new(1, 0, 0, 46)
 tabBar.Position = UDim2.new(0, 0, 0, 48)
 tabBar.BackgroundColor3 = Color3.fromRGB(28, 28, 44)
-
 local tabs = {"Remotes", "Cheats"}
 local tabFrames = {}
 local currentTab = "Remotes"
-
 for i, name in ipairs(tabs) do
 	local btn = Instance.new("TextButton", tabBar)
 	btn.Size = UDim2.new(0.48, -12, 0.8, 0)
@@ -142,14 +132,12 @@ for i, name in ipairs(tabs) do
 	btn.Font = Enum.Font.GothamSemibold
 	btn.TextSize = 18
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 11)
-
 	local ind = Instance.new("Frame", btn)
 	ind.Name = "Indicator"
 	ind.Size = UDim2.new(1, 0, 0, 3)
 	ind.Position = UDim2.new(0, 0, 1, -3)
 	ind.BackgroundColor3 = Color3.fromRGB(120, 190, 255)
 	ind.Visible = (name == currentTab)
-
 	btn.MouseButton1Click:Connect(function()
 		currentTab = name
 		for _, b in tabBar:GetChildren() do
@@ -204,9 +192,8 @@ minBtn.MouseButton1Click:Connect(function()
 end)
 
 -- ────────────────────────────────────────────────────────────────
--- Remotes Tab (your original code - unchanged except minor cleanup)
+-- Remotes Tab
 -- ────────────────────────────────────────────────────────────────
-
 local remotesTab = Instance.new("Frame", content)
 remotesTab.Size = UDim2.new(1, 0, 1, 0)
 remotesTab.BackgroundTransparency = 1
@@ -219,7 +206,6 @@ remotesScroll.Position = UDim2.new(0, 10, 0, 10)
 remotesScroll.BackgroundTransparency = 1
 remotesScroll.ScrollBarThickness = 4
 remotesScroll.ScrollBarImageColor3 = Color3.fromRGB(90, 140, 230)
-
 local remotesLayout = Instance.new("UIListLayout", remotesScroll)
 remotesLayout.Padding = UDim.new(0, 8)
 remotesLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -267,7 +253,6 @@ fireExampleBox.Active = true
 fireExampleBox.Selectable = true
 fireExampleBox.TextEditable = true
 Instance.new("UICorner", fireExampleBox).CornerRadius = UDim.new(0, 10)
-
 local boxPadding = Instance.new("UIPadding", fireExampleBox)
 boxPadding.PaddingTop = UDim.new(0, 10)
 boxPadding.PaddingLeft = UDim.new(0, 12)
@@ -276,12 +261,10 @@ boxPadding.PaddingBottom = UDim.new(0, 10)
 
 local function addRemote(remote)
 	if isBlacklisted(remote.Name) then return end
-
 	local row = Instance.new("Frame")
 	row.Size = UDim2.new(1, 0, 0, 40)
 	row.BackgroundTransparency = 1
 	row.Parent = remotesScroll
-
 	local btn = Instance.new("TextButton", row)
 	btn.Size = UDim2.new(0.55, 0, 1, 0)
 	btn.BackgroundColor3 = Color3.fromRGB(36, 36, 56)
@@ -293,11 +276,9 @@ local function addRemote(remote)
 	btn.TextSize = 15
 	btn.TextXAlignment = Enum.TextXAlignment.Left
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
-
 	local pad = Instance.new("UIPadding", btn)
 	pad.PaddingLeft = UDim.new(0, 14)
 	pad.PaddingRight = UDim.new(0, 14)
-
 	local singleArg = Instance.new("TextBox", row)
 	singleArg.Size = UDim2.new(0.22, -5, 0.9, 0)
 	singleArg.Position = UDim2.new(0.57, 5, 0.05, 0)
@@ -309,7 +290,6 @@ local function addRemote(remote)
 	singleArg.Font = Enum.Font.Gotham
 	singleArg.TextSize = 13
 	Instance.new("UICorner", singleArg).CornerRadius = UDim.new(0, 6)
-
 	local fireOneBtn = Instance.new("TextButton", row)
 	fireOneBtn.Size = UDim2.new(0.20, -5, 0.9, 0)
 	fireOneBtn.Position = UDim2.new(0.80, 5, 0.05, 0)
@@ -319,7 +299,6 @@ local function addRemote(remote)
 	fireOneBtn.Font = Enum.Font.GothamBold
 	fireOneBtn.TextSize = 13
 	Instance.new("UICorner", fireOneBtn).CornerRadius = UDim.new(0, 6)
-
 	fireOneBtn.MouseButton1Click:Connect(function()
 		local txt = singleArg.Text:lower()
 		local arg
@@ -328,7 +307,6 @@ local function addRemote(remote)
 		elseif txt == "false" then arg = false
 		elseif tonumber(txt) then arg = tonumber(txt)
 		else arg = txt end
-
 		local success, err = pcall(function()
 			if remote:IsA("RemoteEvent") then
 				remote:FireServer(arg)
@@ -336,14 +314,12 @@ local function addRemote(remote)
 				remote:InvokeServer(arg)
 			end
 		end)
-
 		if success then
 			setStatus("Fired " .. remote.Name .. " → " .. tostring(arg))
 		else
 			setStatus("Failed: " .. tostring(err))
 		end
 	end)
-
 	btn.MouseButton1Click:Connect(function()
 		local line = getFullExampleLine(remote)
 		fireExampleBox.Text = line
@@ -358,7 +334,6 @@ local function addRemote(remote)
 			end)
 		end
 	end)
-
 	table.insert(remoteButtons, row)
 end
 
@@ -366,7 +341,6 @@ local bottomControls = Instance.new("Frame", remotesTab)
 bottomControls.Size = UDim2.new(1, -20, 0, 36)
 bottomControls.Position = UDim2.new(0, 10, 1, -56)
 bottomControls.BackgroundTransparency = 1
-
 local argInputAll = Instance.new("TextBox", bottomControls)
 argInputAll.Size = UDim2.new(0.45, -5, 1, 0)
 argInputAll.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
@@ -378,7 +352,6 @@ argInputAll.Font = Enum.Font.Gotham
 argInputAll.TextSize = 14
 argInputAll.TextXAlignment = Enum.TextXAlignment.Left
 Instance.new("UICorner", argInputAll).CornerRadius = UDim.new(0, 6)
-
 local fireAllBtn = Instance.new("TextButton", bottomControls)
 fireAllBtn.Size = UDim2.new(0.25, -5, 1, 0)
 fireAllBtn.Position = UDim2.new(0.47, 0, 0, 0)
@@ -388,7 +361,6 @@ fireAllBtn.TextColor3 = Color3.new(1, 1, 1)
 fireAllBtn.Font = Enum.Font.GothamBold
 fireAllBtn.TextSize = 14
 Instance.new("UICorner", fireAllBtn).CornerRadius = UDim.new(0, 6)
-
 fireAllBtn.MouseButton1Click:Connect(function()
 	local txt = argInputAll.Text:lower()
 	local arg
@@ -397,7 +369,6 @@ fireAllBtn.MouseButton1Click:Connect(function()
 	elseif txt == "false" then arg = false
 	elseif tonumber(txt) then arg = tonumber(txt)
 	else arg = txt end
-
 	local ok, fail = 0, 0
 	for _, obj in ipairs(game:GetDescendants()) do
 		if obj:IsA("RemoteEvent") and not isBlacklisted(obj.Name) then
@@ -408,7 +379,6 @@ fireAllBtn.MouseButton1Click:Connect(function()
 	setStatus("Fired " .. ok .. " | Failed " .. fail)
 	fireExampleBox.Text = "Mass fired → arg = " .. tostring(arg)
 end)
-
 local rescanBtn = Instance.new("TextButton", bottomControls)
 rescanBtn.Size = UDim2.new(0.28, -5, 1, 0)
 rescanBtn.Position = UDim2.new(0.72, 0, 0, 0)
@@ -435,13 +405,11 @@ local function scanRemotes()
 	end
 	setStatus("Found " .. count .. " remotes")
 end
-
 rescanBtn.MouseButton1Click:Connect(scanRemotes)
 
 -- ────────────────────────────────────────────────────────────────
 -- Cheats Tab + Working ESP & Aimbot
 -- ────────────────────────────────────────────────────────────────
-
 local cheatsTab = Instance.new("Frame", content)
 cheatsTab.Size = UDim2.new(1, 0, 1, 0)
 cheatsTab.BackgroundTransparency = 1
@@ -454,7 +422,6 @@ cheatsScroll.Position = UDim2.new(0, 10, 0, 10)
 cheatsScroll.BackgroundTransparency = 1
 cheatsScroll.ScrollBarThickness = 4
 cheatsScroll.ScrollBarImageColor3 = Color3.fromRGB(90, 140, 230)
-
 local cheatsLayout = Instance.new("UIListLayout", cheatsScroll)
 cheatsLayout.Padding = UDim.new(0, 12)
 cheatsLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -483,10 +450,9 @@ local targets = {
 }
 
 local connections = {}
-local espConnections = {}     -- player → RBXScriptConnection
-local espAdornments = {}      -- player → {part → BoxHandleAdornment}
+local espConnections = {}
+local espAdornments = {}
 
--- ESP Cleanup
 local function clearESP(plr)
 	if espAdornments[plr] then
 		for _, adorn in pairs(espAdornments[plr]) do
@@ -500,16 +466,12 @@ local function clearESP(plr)
 	end
 end
 
--- Apply ESP to one player
 local function applyESP(plr)
 	if plr == player then return end
-
 	local function createBoxes(char)
 		if not char then return end
-		clearESP(plr)   -- remove old adornments first
-
+		clearESP(plr)
 		espAdornments[plr] = {}
-
 		for _, part in ipairs(char:GetChildren()) do
 			if part:IsA("BasePart") then
 				local box = Instance.new("BoxHandleAdornment")
@@ -522,28 +484,22 @@ local function applyESP(plr)
 				box.ZIndex = 10
 				box.Visible = states.ESP
 				box.Parent = part
-
 				espAdornments[plr][part] = box
 			end
 		end
 	end
-
 	if plr.Character then
 		createBoxes(plr.Character)
 	end
-
 	local conn = plr.CharacterAdded:Connect(function(char)
 		task.wait(0.12)
 		createBoxes(char)
 	end)
-
 	espConnections[plr] = conn
 end
 
--- Toggle ESP
 local function toggleESP(on)
 	states.ESP = on
-
 	if on then
 		setStatus("ESP ON")
 		for _, p in ipairs(Players:GetPlayers()) do
@@ -560,61 +516,45 @@ end
 -- Aimbot
 local aimbotConnection
 local lastTraceBeam = nil
-
 local function getClosestTarget(maxFovDeg)
 	local bestPart = nil
 	local bestDot = -1
 	local camPos = camera.CFrame.Position
 	local camLook = camera.CFrame.LookVector
 	local maxCos = math.cos(math.rad(maxFovDeg or 14))
-
 	for _, plr in ipairs(Players:GetPlayers()) do
 		if plr == player or not plr.Character then continue end
 		local head = plr.Character:FindFirstChild("Head") or plr.Character:FindFirstChild("HumanoidRootPart")
 		if not head then continue end
-
 		local vec = (head.Position - camPos).Unit
 		local dot = camLook:Dot(vec)
-
 		if dot > maxCos and dot > bestDot then
 			bestDot = dot
 			bestPart = head
 		end
 	end
-
 	return bestPart
 end
 
 local function toggleAimbot(on)
 	states.Aimbot = on
-
 	if on then
 		setStatus("Aimbot ON")
 		if aimbotConnection then aimbotConnection:Disconnect() end
-
 		aimbotConnection = RunService.RenderStepped:Connect(function()
 			if not states.Aimbot then return end
-
-			local target = getClosestTarget(14)  -- adjust FOV here (degrees)
-
+			local target = getClosestTarget(14)
 			if target then
-				-- Smooth aim
 				local targetCF = CFrame.new(camera.CFrame.Position, target.Position)
-				camera.CFrame = camera.CFrame:Lerp(targetCF, 0.16)  -- 0.12–0.25 = smoothness
-
-				-- Optional red trace line (lightweight)
+				camera.CFrame = camera.CFrame:Lerp(targetCF, 0.16)
 				if lastTraceBeam then lastTraceBeam:Destroy() end
-
 				local beam = Instance.new("Beam")
 				local a0 = Instance.new("Attachment")
 				local a1 = Instance.new("Attachment")
-
 				a0.WorldPosition = camera.CFrame.Position
 				a1.WorldPosition = target.Position + Vector3.new(0, 0.1, 0)
-
 				a0.Parent = workspace.Terrain
 				a1.Parent = workspace.Terrain
-
 				beam.Attachment0 = a0
 				beam.Attachment1 = a1
 				beam.Color = ColorSequence.new(Color3.fromRGB(255, 40, 40))
@@ -623,9 +563,7 @@ local function toggleAimbot(on)
 				beam.Transparency = NumberSequence.new(0.35)
 				beam.FaceCamera = true
 				beam.Parent = workspace
-
 				lastTraceBeam = beam
-
 				task.delay(0.18, function()
 					if lastTraceBeam == beam then
 						beam:Destroy()
@@ -647,18 +585,16 @@ local function toggleAimbot(on)
 	end
 end
 
--- Fly
+-- Fly, Noclip, InfJump, GodMode, Fullbright, Spin (unchanged from original)
 local function toggleFly(on)
 	local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 	if not hrp then return end
-
 	if on then
 		local bv = Instance.new("BodyVelocity")
 		bv.Name = "EliteFlyBV"
 		bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
 		bv.Velocity = Vector3.new()
 		bv.Parent = hrp
-
 		local bg = Instance.new("BodyGyro")
 		bg.Name = "EliteFlyBG"
 		bg.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
@@ -666,11 +602,9 @@ local function toggleFly(on)
 		bg.D = 2000
 		bg.CFrame = hrp.CFrame
 		bg.Parent = hrp
-
 		connections.fly = RunService.RenderStepped:Connect(function()
 			if not states.Fly then return end
 			bg.CFrame = camera.CFrame
-
 			local move = Vector3.new()
 			if UserInputService:IsKeyDown(Enum.KeyCode.W) then move += camera.CFrame.LookVector end
 			if UserInputService:IsKeyDown(Enum.KeyCode.S) then move -= camera.CFrame.LookVector end
@@ -678,7 +612,6 @@ local function toggleFly(on)
 			if UserInputService:IsKeyDown(Enum.KeyCode.D) then move += camera.CFrame.RightVector end
 			if UserInputService:IsKeyDown(Enum.KeyCode.Space) then move += Vector3.new(0,1,0) end
 			if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then move += Vector3.new(0,-1,0) end
-
 			bv.Velocity = move.Magnitude > 0 and move.Unit * targets.FlySpeed or Vector3.new()
 		end)
 	else
@@ -688,7 +621,6 @@ local function toggleFly(on)
 	end
 end
 
--- Noclip
 local function toggleNoclip(on)
 	if connections.noclip then connections.noclip:Disconnect() connections.noclip = nil end
 	if on then
@@ -704,7 +636,6 @@ local function toggleNoclip(on)
 	end
 end
 
--- Infinite Jump
 local function toggleInfJump(on)
 	if connections.infJump then connections.infJump:Disconnect() connections.infJump = nil end
 	if on then
@@ -715,7 +646,6 @@ local function toggleInfJump(on)
 	end
 end
 
--- God Mode
 local function toggleGod(on)
 	if connections.god then connections.god:Disconnect() connections.god = nil end
 	if on then
@@ -726,7 +656,6 @@ local function toggleGod(on)
 	end
 end
 
--- Fullbright
 local lightingBackup = {
 	Brightness = Lighting.Brightness,
 	GlobalShadows = Lighting.GlobalShadows,
@@ -734,7 +663,6 @@ local lightingBackup = {
 	OutdoorAmbient = Lighting.OutdoorAmbient,
 	ClockTime = Lighting.ClockTime
 }
-
 local function toggleFullbright(on)
 	if on then
 		Lighting.Brightness = 2
@@ -751,12 +679,10 @@ local function toggleFullbright(on)
 	end
 end
 
--- Spin
 local spinConnection
 local function toggleSpin(on)
 	local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 	if not hrp then return end
-
 	if on then
 		spinConnection = RunService.RenderStepped:Connect(function(dt)
 			if not states.Spin then return end
@@ -770,7 +696,6 @@ local function toggleSpin(on)
 	end
 end
 
--- Teleport to player
 local function teleportToPlayer(name)
 	name = name:lower()
 	local target
@@ -780,7 +705,6 @@ local function teleportToPlayer(name)
 			break
 		end
 	end
-
 	if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
 		local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 		if hrp then
@@ -792,7 +716,29 @@ local function teleportToPlayer(name)
 	end
 end
 
--- Apply stats on respawn
+-- NEW: GET EVERY SINGLE TOOL → BACKPACK
+local function getAllTools()
+	local backpack = player:FindFirstChild("Backpack")
+	if not backpack then
+		setStatus("❌ Backpack not found!")
+		return
+	end
+	local added = 0
+	for _, obj in ipairs(game:GetDescendants()) do
+		if obj:IsA("Tool") then
+			-- Skip tools that are already in your backpack or currently equipped
+			if obj.Parent ~= backpack and (not player.Character or obj.Parent ~= player.Character) then
+				local clone = obj:Clone()
+				if clone then
+					clone.Parent = backpack
+					added = added + 1
+				end
+			end
+		end
+	end
+	setStatus("✅ Gave you " .. added .. " tools!")
+end
+
 local function applyStats()
 	local hum = player.Character and player.Character:FindFirstChild("Humanoid")
 	if hum then
@@ -812,7 +758,6 @@ player.CharacterAdded:Connect(function(char)
 	if states.GodMode then toggleGod(true) end
 	if states.Spin then toggleSpin(true) end
 end)
-
 if player.Character then applyStats() end
 
 -- UI Components
@@ -822,7 +767,6 @@ local function createToggle(name, colorOn, colorOff, toggleFunc)
 	frame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
 	frame.Parent = cheatsScroll
 	Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-
 	local btn = Instance.new("TextButton", frame)
 	btn.Size = UDim2.new(0.18, 0, 0.8, 0)
 	btn.Position = UDim2.new(0.02, 0, 0, 10)
@@ -832,7 +776,6 @@ local function createToggle(name, colorOn, colorOff, toggleFunc)
 	btn.Font = Enum.Font.GothamBold
 	btn.TextSize = 16
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
-
 	local label = Instance.new("TextLabel", frame)
 	label.Size = UDim2.new(0.78, 0, 1, 0)
 	label.Position = UDim2.new(0.22, 0, 0, 0)
@@ -842,7 +785,6 @@ local function createToggle(name, colorOn, colorOff, toggleFunc)
 	label.Font = Enum.Font.GothamSemibold
 	label.TextSize = 17
 	label.TextXAlignment = Enum.TextXAlignment.Left
-
 	btn.MouseButton1Click:Connect(function()
 		states[name] = not states[name]
 		btn.BackgroundColor3 = states[name] and colorOn or colorOff
@@ -858,7 +800,6 @@ local function createSlider(name, targetKey, default, min, max)
 	frame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
 	frame.Parent = cheatsScroll
 	Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-
 	local lbl = Instance.new("TextLabel", frame)
 	lbl.Size = UDim2.new(0.45, 0, 1, 0)
 	lbl.BackgroundTransparency = 1
@@ -867,7 +808,6 @@ local function createSlider(name, targetKey, default, min, max)
 	lbl.Font = Enum.Font.GothamSemibold
 	lbl.TextSize = 16
 	lbl.TextXAlignment = Enum.TextXAlignment.Left
-
 	local input = Instance.new("TextBox", frame)
 	input.Size = UDim2.new(0.3, 0, 0.7, 0)
 	input.Position = UDim2.new(0.48, 0, 0.15, 0)
@@ -877,7 +817,6 @@ local function createSlider(name, targetKey, default, min, max)
 	input.Font = Enum.Font.Gotham
 	input.TextSize = 16
 	Instance.new("UICorner", input).CornerRadius = UDim.new(0, 8)
-
 	local setBtn = Instance.new("TextButton", frame)
 	setBtn.Size = UDim2.new(0.2, 0, 0.7, 0)
 	setBtn.Position = UDim2.new(0.8, 0, 0.15, 0)
@@ -887,7 +826,6 @@ local function createSlider(name, targetKey, default, min, max)
 	setBtn.Font = Enum.Font.GothamBold
 	setBtn.TextSize = 15
 	Instance.new("UICorner", setBtn).CornerRadius = UDim.new(0, 8)
-
 	local function update()
 		local val = tonumber(input.Text)
 		if val and val >= min and val <= max then
@@ -899,34 +837,32 @@ local function createSlider(name, targetKey, default, min, max)
 			input.Text = tostring(targets[targetKey])
 		end
 	end
-
 	input.FocusLost:Connect(update)
 	setBtn.MouseButton1Click:Connect(update)
 end
 
 -- Build Cheats UI
-createToggle("ESP",       Color3.fromRGB(255, 80, 80),   Color3.fromRGB(60, 60, 80),   toggleESP)
-createToggle("Aimbot",    Color3.fromRGB(255, 100, 100), Color3.fromRGB(60, 60, 80),   toggleAimbot)
-createToggle("Fly",       Color3.fromRGB(100, 200, 255), Color3.fromRGB(60, 60, 80),   toggleFly)
-createToggle("Noclip",    Color3.fromRGB(255, 180, 100), Color3.fromRGB(60, 60, 80),   toggleNoclip)
-createToggle("Inf Jump",  Color3.fromRGB(180, 120, 255), Color3.fromRGB(60, 60, 80),   toggleInfJump)
-createToggle("God Mode",  Color3.fromRGB(255, 150, 100), Color3.fromRGB(60, 60, 80),   toggleGod)
-createToggle("Fullbright",Color3.fromRGB(255, 255, 140), Color3.fromRGB(60, 60, 80),   toggleFullbright)
-createToggle("Spin",      Color3.fromRGB(220, 100, 220), Color3.fromRGB(60, 60, 80),   toggleSpin)
+createToggle("ESP", Color3.fromRGB(255, 80, 80), Color3.fromRGB(60, 60, 80), toggleESP)
+createToggle("Aimbot", Color3.fromRGB(255, 100, 100), Color3.fromRGB(60, 60, 80), toggleAimbot)
+createToggle("Fly", Color3.fromRGB(100, 200, 255), Color3.fromRGB(60, 60, 80), toggleFly)
+createToggle("Noclip", Color3.fromRGB(255, 180, 100), Color3.fromRGB(60, 60, 80), toggleNoclip)
+createToggle("Inf Jump", Color3.fromRGB(180, 120, 255), Color3.fromRGB(60, 60, 80), toggleInfJump)
+createToggle("God Mode", Color3.fromRGB(255, 150, 100), Color3.fromRGB(60, 60, 80), toggleGod)
+createToggle("Fullbright",Color3.fromRGB(255, 255, 140), Color3.fromRGB(60, 60, 80), toggleFullbright)
+createToggle("Spin", Color3.fromRGB(220, 100, 220), Color3.fromRGB(60, 60, 80), toggleSpin)
 
 createSlider("Spin Speed (°/s)", "SpinSpeed", 360, 0, 20000)
-createSlider("Walk Speed",       "WalkSpeed", 16,   0, 300)
-createSlider("Jump Height",      "JumpHeight",7.2,  0, 500)
-createSlider("Max Health",       "MaxHealth", 100,  1, 10000)
-createSlider("FOV",              "FOV",       70,  10, 150)
-createSlider("Fly Speed",        "FlySpeed",  50,  10, 500)
+createSlider("Walk Speed", "WalkSpeed", 16, 0, 300)
+createSlider("Jump Height", "JumpHeight",7.2, 0, 500)
+createSlider("Max Health", "MaxHealth", 100, 1, 10000)
+createSlider("FOV", "FOV", 70, 10, 150)
+createSlider("Fly Speed", "FlySpeed", 50, 10, 500)
 
 -- Teleport To
 local tpToFrame = Instance.new("Frame", cheatsScroll)
 tpToFrame.Size = UDim2.new(1, 0, 0, 50)
 tpToFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
 Instance.new("UICorner", tpToFrame).CornerRadius = UDim.new(0, 10)
-
 local tpToLabel = Instance.new("TextLabel", tpToFrame)
 tpToLabel.Size = UDim2.new(0.4, 0, 1, 0)
 tpToLabel.BackgroundTransparency = 1
@@ -935,7 +871,6 @@ tpToLabel.TextColor3 = Color3.fromRGB(220, 240, 255)
 tpToLabel.Font = Enum.Font.GothamSemibold
 tpToLabel.TextSize = 16
 tpToLabel.TextXAlignment = Enum.TextXAlignment.Left
-
 local tpToInput = Instance.new("TextBox", tpToFrame)
 tpToInput.Size = UDim2.new(0.35, 0, 0.8, 0)
 tpToInput.Position = UDim2.new(0.42, 0, 0.1, 0)
@@ -946,7 +881,6 @@ tpToInput.Text = ""
 tpToInput.Font = Enum.Font.Gotham
 tpToInput.TextSize = 15
 Instance.new("UICorner", tpToInput).CornerRadius = UDim.new(0, 8)
-
 local tpToBtn = Instance.new("TextButton", tpToFrame)
 tpToBtn.Size = UDim2.new(0.2, 0, 0.8, 0)
 tpToBtn.Position = UDim2.new(0.79, 0, 0.1, 0)
@@ -956,7 +890,6 @@ tpToBtn.TextColor3 = Color3.new(1, 1, 1)
 tpToBtn.Font = Enum.Font.GothamBold
 tpToBtn.TextSize = 15
 Instance.new("UICorner", tpToBtn).CornerRadius = UDim.new(0, 8)
-
 tpToBtn.MouseButton1Click:Connect(function()
 	local name = tpToInput.Text
 	if name ~= "" then
@@ -964,6 +897,26 @@ tpToBtn.MouseButton1Click:Connect(function()
 	else
 		setStatus("Enter player name")
 	end
+end)
+
+-- NEW GET EVERY TOOL BUTTON (placed right after Teleport)
+local toolsFrame = Instance.new("Frame", cheatsScroll)
+toolsFrame.Size = UDim2.new(1, 0, 0, 60)
+toolsFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
+Instance.new("UICorner", toolsFrame).CornerRadius = UDim.new(0, 10)
+
+local toolsBtn = Instance.new("TextButton", toolsFrame)
+toolsBtn.Size = UDim2.new(0.96, 0, 0.75, 0)
+toolsBtn.Position = UDim2.new(0.02, 0, 0.125, 0)
+toolsBtn.BackgroundColor3 = Color3.fromRGB(80, 220, 80)
+toolsBtn.Text = "🎒 GET EVERY TOOL"
+toolsBtn.TextColor3 = Color3.new(1, 1, 1)
+toolsBtn.Font = Enum.Font.GothamBold
+toolsBtn.TextSize = 19
+Instance.new("UICorner", toolsBtn).CornerRadius = UDim.new(0, 10)
+
+toolsBtn.MouseButton1Click:Connect(function()
+	getAllTools()
 end)
 
 -- Cleanup when players leave
@@ -980,7 +933,7 @@ task.defer(function()
 	TweenService:Create(main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 		Position = UDim2.new(0.31, 0, 0.125, 0)
 	}):Play()
-	print("Diddy Cheats loaded • RightShift to toggle")
+	print("Diddy Cheats loaded • RightShift to toggle • New: GET EVERY TOOL button in Cheats tab")
 	setStatus("Loaded")
 end)
 
