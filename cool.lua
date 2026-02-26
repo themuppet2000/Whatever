@@ -1070,7 +1070,7 @@ task.defer(function()
 	TweenService:Create(main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 		Position = UDim2.new(0.31, 0, 0.125, 0)
 	}):Play()
-	print("Diddy Cheats loaded • RightShift to toggle • ESP uses team colors or default")
+	print("Diddy Cheats loaded V1")
 	setStatus("Loaded")
 end)
 
@@ -1093,3 +1093,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		end
 	end
 end)
+
