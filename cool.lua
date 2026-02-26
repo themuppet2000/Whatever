@@ -914,7 +914,7 @@ createToggle("God Mode",  Color3.fromRGB(255, 150, 100), Color3.fromRGB(60, 60, 
 createToggle("Fullbright",Color3.fromRGB(255, 255, 140), Color3.fromRGB(60, 60, 80),   toggleFullbright)
 createToggle("Spin",      Color3.fromRGB(220, 100, 220), Color3.fromRGB(60, 60, 80),   toggleSpin)
 
-createSlider("Spin Speed (°/s)", "SpinSpeed", 360, 0, 2000)
+createSlider("Spin Speed (°/s)", "SpinSpeed", 360, 0, 20000)
 createSlider("Walk Speed",       "WalkSpeed", 16,   0, 300)
 createSlider("Jump Height",      "JumpHeight",7.2,  0, 500)
 createSlider("Max Health",       "MaxHealth", 100,  1, 10000)
