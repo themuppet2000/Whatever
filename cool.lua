@@ -1076,7 +1076,7 @@ end)
 -- Toggle GUI - Right Shift
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
-	if input.KeyCode == Enum.KeyCode.RightShift then
+	if input.KeyCode == Enum.KeyCode.PageUp then
 		if main.Visible then
 			TweenService:Create(main, TweenInfo.new(0.4, Enum.EasingStyle.Back), {
 				Position = UDim2.new(0.31, 0, -1.2, 0)
@@ -1092,5 +1092,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		end
 	end
 end)
+
 
 
