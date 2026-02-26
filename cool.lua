@@ -1,4 +1,3 @@
--- DiddysCheatGUI - Updated 2025/2026 edition with team-color ESP + default color picker
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -1093,4 +1092,5 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		end
 	end
 end)
+
 
