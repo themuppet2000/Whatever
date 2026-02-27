@@ -21,8 +21,21 @@ gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 gui.DisplayOrder = 2147483647
 gui.Parent = player:WaitForChild("PlayerGui")
 
-local remoteBlacklist = {"PlayEmote", "SendNotificationInfo"}
+local remoteBlacklist = {
+	"PlayEmote",
+	"SendNotificationInfo",
 
+	"ShowPlayerJoinedFriendsToast",
+	"ShowFriendJoinedPlayerToast",
+	"CreateOrJoinParty",
+	"ServerSideBulkPurchaseEvent",
+	"SetDialogInUse",
+	"ContactListInvokelrisInvite",
+	"ContactListIrisInviteTeleport",
+	"UpdateCurrentCall",
+	"RequestDeviceCameraOrientationCapability",
+	"ReferredPlayerJoin",
+}
 local function isBlacklisted(name)
 	name = name:lower()
 	for _, word in ipairs(remoteBlacklist) do
@@ -1069,7 +1082,7 @@ task.defer(function()
 	TweenService:Create(main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 		Position = UDim2.new(0.31, 0, 0.125, 0)
 	}):Play()
-	print("Diddy Cheats loaded V1")
+	print("Diddy Cheats loaded V1.01 - Updated remote events")
 	setStatus("Loaded")
 end)
 
@@ -1092,6 +1105,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		end
 	end
 end)
+
 
 
 
