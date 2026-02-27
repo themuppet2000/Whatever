@@ -25,13 +25,29 @@ local remoteBlacklist = {
 	"PlayEmote",
 	"SendNotificationInfo",
 
+	-- RemoteFunctions
+	"GetServerVersion",
+	"GetServerChannel",
+	"WhisperChat",
+	"GetServerType",
+
+	-- RemoteEvents
+	"CanChatWith",
+	"SetPlayerBlockList",
+	"UpdatePlayerBlockList",
+	"NewPlayerGroupDetails",
+	"NewPlayerCanManageDetails",
+	"SendPlayerBlockList",
+	"UpdateLocalPlayerBlockList",
+	"SendPlayerProfileSettings",
+	"RequestPlayerProfileSettings",
+	"UpdatePlayerProfileSettings",
 	"ShowPlayerJoinedFriendsToast",
 	"ShowFriendJoinedPlayerToast",
 	"CreateOrJoinParty",
 	"ServerSideBulkPurchaseEvent",
 	"SetDialogInUse",
-	"ContactListInvokelrisInvite",
-	"ContactListIrisInviteTeleport",
+	"ContactListInvokeIrisInvite",
 	"UpdateCurrentCall",
 	"RequestDeviceCameraOrientationCapability",
 	"ReferredPlayerJoin",
@@ -1105,6 +1121,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		end
 	end
 end)
+
 
 
 
