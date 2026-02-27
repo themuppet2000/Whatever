@@ -1101,7 +1101,7 @@ task.defer(function()
 	TweenService:Create(main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 		Position = UDim2.new(0.31, 0, 0.125, 0)
 	}):Play()
-	print("Diddy Cheats loaded V1.03 - Updated remote events")
+	print("Diddy Cheats loaded V1.04 - Updated remote events")
 	setStatus("Loaded")
 end)
 
@@ -1124,6 +1124,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		end
 	end
 end)
+
 
 
 
