@@ -5,14 +5,12 @@ local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
 local player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
-local guiName = "DiddysCheatGUI"
 
--- Clear old GUI if exists
+local guiName = "EliteDiddyCheatGUI"
 if player.PlayerGui:FindFirstChild(guiName) then
 	player.PlayerGui[guiName]:Destroy()
 end
 
--- Create ScreenGui
 local gui = Instance.new("ScreenGui")
 gui.Name = guiName
 gui.ResetOnSpawn = false
@@ -22,39 +20,18 @@ gui.DisplayOrder = 2147483647
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local remoteBlacklist = {
-	"PlayEmote",
-	"SendNotificationInfo",
-
-	-- RemoteFunctions
-	"GetServerVersion",
-	"GetServerChannel",
-	"WhisperChat",
-	"GetServerType",
-
-	-- RemoteEvents
-	"CanChatWith",
-	"SetPlayerBlockList",
-	"UpdatePlayerBlockList",
-	"NewPlayerGroupDetails",
-	"NewPlayerCanManageDetails",
-	"SendPlayerBlockList",
-	"UpdateLocalPlayerBlockList",
-	"SendPlayerProfileSettings",
-	"RequestPlayerProfileSettings",
-	"UpdatePlayerProfileSettings",
-	"ShowPlayerJoinedFriendsToast",
-	"ShowFriendJoinedPlayerToast",
-	"CreateOrJoinParty",
-	"ServerSideBulkPurchaseEvent",
-	"SetDialogInUse",
-	"ContactListInvokeIrisInvite",
-	"UpdateCurrentCall",
-	"RequestDeviceCameraOrientationCapability",
-	"ReferredPlayerJoin",
-	"ContactListIrisInviteTeleport",
-	"IntegrityCheckProcessorKey2_DynamicTranslationSender_LocalizationService",
+	"PlayEmote", "SendNotificationInfo", "GetServerVersion", "GetServerChannel",
+	"WhisperChat", "GetServerType", "CanChatWith", "SetPlayerBlockList",
+	"UpdatePlayerBlockList", "NewPlayerGroupDetails", "NewPlayerCanManageDetails",
+	"SendPlayerBlockList", "UpdateLocalPlayerBlockList", "SendPlayerProfileSettings",
+	"RequestPlayerProfileSettings", "UpdatePlayerProfileSettings",
+	"ShowPlayerJoinedFriendsToast", "ShowFriendJoinedPlayerToast", "CreateOrJoinParty",
+	"ServerSideBulkPurchaseEvent", "SetDialogInUse", "ContactListInvokeIrisInvite",
+	"UpdateCurrentCall", "RequestDeviceCameraOrientationCapability", "ReferredPlayerJoin",
+	"ContactListIrisInviteTeleport", "IntegrityCheckProcessorKey2_DynamicTranslationSender_LocalizationService",
 	"IntegrityCheckProcessorKey2_LocalizationTableAnalyticsSender_LocalizationService",
 }
+
 local function isBlacklisted(name)
 	name = name:lower()
 	for _, word in ipairs(remoteBlacklist) do
@@ -62,10 +39,6 @@ local function isBlacklisted(name)
 	end
 	return false
 end
-
--- ────────────────────────────────────────────────────────────────
--- Main Frame & UI Setup
--- ────────────────────────────────────────────────────────────────
 
 local main = Instance.new("Frame")
 main.Size = UDim2.new(0.38, 0, 0.75, 0)
@@ -83,7 +56,6 @@ stroke.Color = Color3.fromRGB(70, 110, 200)
 stroke.Thickness = 1.5
 stroke.Transparency = 0.3
 
--- Title Bar
 local titleBar = Instance.new("Frame", main)
 titleBar.Size = UDim2.new(1, 0, 0, 48)
 titleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 48)
@@ -94,7 +66,7 @@ local title = Instance.new("TextLabel", titleBar)
 title.Size = UDim2.new(0.65, 0, 1, 0)
 title.Position = UDim2.new(0.035, 0, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "DIDDY CHEATS"
+title.Text = "ELITE DIDDY CHEATS V2.3"
 title.TextColor3 = Color3.fromRGB(225, 240, 255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 24
@@ -116,7 +88,6 @@ local function setStatus(msg)
 	end
 end
 
--- Minimize Button
 local minBtn = Instance.new("TextButton", titleBar)
 minBtn.Size = UDim2.new(0, 34, 0, 34)
 minBtn.Position = UDim2.new(1, -42, 0, 7)
@@ -127,7 +98,6 @@ minBtn.Font = Enum.Font.GothamBold
 minBtn.TextSize = 22
 Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 9)
 
--- Dragging
 local dragging, dragInput, dragStart, startPos
 titleBar.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -153,56 +123,212 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
--- Tab Bar
 local tabBar = Instance.new("Frame", main)
 tabBar.Size = UDim2.new(1, 0, 0, 46)
 tabBar.Position = UDim2.new(0, 0, 0, 48)
 tabBar.BackgroundColor3 = Color3.fromRGB(28, 28, 44)
 
-local tabs = {"Remotes", "Cheats"}
+local tabButtons = {}
+local tabs = {"Remotes", "Cheats", "Players"}
 local tabFrames = {}
 local currentTab = "Remotes"
 
+-- ────────────────────────────────────────────────
+-- PLAYER FUNCTIONS MOVED UP SO THEY EXIST BEFORE TAB BUTTONS USE THEM
+-- ────────────────────────────────────────────────
+
+local content = Instance.new("Frame", main)
+content.Size = UDim2.new(1, 0, 1, -94)
+content.Position = UDim2.new(0, 0, 0, 94)
+content.BackgroundTransparency = 1
+
+-- Players Tab
+local playersTab = Instance.new("Frame", content)
+playersTab.Size = UDim2.new(1, 0, 1, 0)
+playersTab.BackgroundTransparency = 1
+playersTab.Visible = false
+tabFrames.Players = playersTab
+
+local playersScroll = Instance.new("ScrollingFrame", playersTab)
+playersScroll.Size = UDim2.new(1, -20, 1, -20)
+playersScroll.Position = UDim2.new(0, 10, 0, 10)
+playersScroll.BackgroundTransparency = 1
+playersScroll.ScrollBarThickness = 4
+playersScroll.ScrollBarImageColor3 = Color3.fromRGB(90, 140, 230)
+
+local playersLayout = Instance.new("UIListLayout", playersScroll)
+playersLayout.Padding = UDim.new(0, 8)
+playersLayout.SortOrder = Enum.SortOrder.LayoutOrder
+playersLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	playersScroll.CanvasSize = UDim2.fromOffset(0, playersLayout.AbsoluteContentSize.Y + 30)
+end)
+
+local currentSpectate = nil
+
+local function teleportToPlayer(name)
+	name = name:lower()
+	local target
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p.Name:lower():find(name) or p.DisplayName:lower():find(name) then
+			target = p
+			break
+		end
+	end
+	if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+		local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		if hrp then
+			hrp.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(0, 4, 0)
+			setStatus("Teleported to " .. target.Name)
+		end
+	else
+		setStatus("Player not found")
+	end
+end
+
+local function bringPlayer(name)
+	name = name:lower()
+	local target
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p.Name:lower():find(name) or p.DisplayName:lower():find(name) then
+			target = p
+			break
+		end
+	end
+	if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+		local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		if hrp then
+			connections.bring = RunService.Heartbeat:Connect(function()
+				target.Character.HumanoidRootPart.CFrame = hrp.CFrame
+			end)
+			task.delay(5, function() if connections.bring then connections.bring:Disconnect() end end)
+			setStatus("Bringing " .. target.Name)
+		end
+	else
+		setStatus("Player not found")
+	end
+end
+
+local function spectatePlayer(name)
+	name = name:lower()
+	if currentSpectate and currentSpectate:lower() == name then
+		camera.CameraSubject = player.Character and (player.Character:FindFirstChild("Humanoid") or player.Character.PrimaryPart)
+		setStatus("Spectate stopped")
+		currentSpectate = nil
+		return
+	end
+	local target
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p.Name:lower():find(name) or p.DisplayName:lower():find(name) then
+			target = p
+			break
+		end
+	end
+	if target and target.Character then
+		camera.CameraSubject = target.Character:FindFirstChild("Humanoid") or target.Character.PrimaryPart
+		setStatus("Spectating " .. target.Name)
+		currentSpectate = target.Name:lower()
+	else
+		setStatus("Player not found")
+	end
+end
+
+local function refreshPlayerList()
+	if not playersScroll or not playersScroll:IsDescendantOf(gui) then
+		warn("Players scroll frame not ready yet")
+		return
+	end
+	for _, child in ipairs(playersScroll:GetChildren()) do
+		if child:IsA("Frame") or child:IsA("GuiObject") then
+			child:Destroy()
+		end
+	end
+	for _, plr in ipairs(Players:GetPlayers()) do
+		if plr == player then continue end
+		local row = Instance.new("Frame")
+		row.Size = UDim2.new(1, 0, 0, 45)
+		row.BackgroundTransparency = 1
+		row.Parent = playersScroll
+		local nameLbl = Instance.new("TextLabel", row)
+		nameLbl.Size = UDim2.new(0.4, 0, 1, 0)
+		nameLbl.BackgroundTransparency = 1
+		nameLbl.Text = plr.DisplayName .. " (@" .. plr.Name .. ")"
+		nameLbl.TextColor3 = Color3.fromRGB(220, 240, 255)
+		nameLbl.Font = Enum.Font.GothamSemibold
+		nameLbl.TextSize = 16
+		nameLbl.TextXAlignment = Enum.TextXAlignment.Left
+		local tpBtn = Instance.new("TextButton", row)
+		tpBtn.Size = UDim2.new(0.18, 0, 0.8, 0)
+		tpBtn.Position = UDim2.new(0.42, 0, 0.1, 0)
+		tpBtn.BackgroundColor3 = Color3.fromRGB(70, 140, 220)
+		tpBtn.Text = "TP To"
+		tpBtn.TextColor3 = Color3.new(1,1,1)
+		tpBtn.Font = Enum.Font.Gotham
+		tpBtn.TextSize = 14
+		Instance.new("UICorner", tpBtn).CornerRadius = UDim.new(0, 6)
+		tpBtn.MouseButton1Click:Connect(function() teleportToPlayer(plr.Name) end)
+		local bringBtn = Instance.new("TextButton", row)
+		bringBtn.Size = UDim2.new(0.18, 0, 0.8, 0)
+		bringBtn.Position = UDim2.new(0.61, 0, 0.1, 0)
+		bringBtn.BackgroundColor3 = Color3.fromRGB(220, 140, 70)
+		bringBtn.Text = "Bring"
+		bringBtn.TextColor3 = Color3.new(1,1,1)
+		bringBtn.Font = Enum.Font.Gotham
+		bringBtn.TextSize = 14
+		Instance.new("UICorner", bringBtn).CornerRadius = UDim.new(0, 6)
+		bringBtn.MouseButton1Click:Connect(function() bringPlayer(plr.Name) end)
+		local specBtn = Instance.new("TextButton", row)
+		specBtn.Size = UDim2.new(0.18, 0, 0.8, 0)
+		specBtn.Position = UDim2.new(0.80, 0, 0.1, 0)
+		specBtn.BackgroundColor3 = Color3.fromRGB(140, 220, 70)
+		specBtn.Text = "Spectate"
+		specBtn.TextColor3 = Color3.new(1,1,1)
+		specBtn.Font = Enum.Font.Gotham
+		specBtn.TextSize = 14
+		Instance.new("UICorner", specBtn).CornerRadius = UDim.new(0, 6)
+		specBtn.MouseButton1Click:Connect(function() spectatePlayer(plr.Name) end)
+	end
+end
+
+-- ────────────────────────────────────────────────
+-- TAB BUTTONS (now safe because functions above exist)
+-- ────────────────────────────────────────────────
+
 for i, name in ipairs(tabs) do
 	local btn = Instance.new("TextButton", tabBar)
-	btn.Size = UDim2.new(0.48, -12, 0.8, 0)
-	btn.Position = UDim2.new((i-1)*0.5 + 0.01, 0, 0.1, 0)
+	btn.Size = UDim2.new(0.32, -12, 0.8, 0)
+	btn.Position = UDim2.new((i-1)*0.333 + 0.01, 0, 0.1, 0)
 	btn.BackgroundColor3 = (name == currentTab) and Color3.fromRGB(42, 42, 62) or Color3.fromRGB(28, 28, 44)
 	btn.Text = name
 	btn.TextColor3 = Color3.fromRGB(215, 235, 255)
 	btn.Font = Enum.Font.GothamSemibold
 	btn.TextSize = 18
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 11)
-
 	local ind = Instance.new("Frame", btn)
 	ind.Name = "Indicator"
 	ind.Size = UDim2.new(1, 0, 0, 3)
 	ind.Position = UDim2.new(0, 0, 1, -3)
 	ind.BackgroundColor3 = Color3.fromRGB(120, 190, 255)
 	ind.Visible = (name == currentTab)
-
+	table.insert(tabButtons, btn)
 	btn.MouseButton1Click:Connect(function()
 		currentTab = name
-		for _, b in tabBar:GetChildren() do
-			if b:IsA("TextButton") then
-				b.BackgroundColor3 = Color3.fromRGB(28, 28, 44)
-				b.Indicator.Visible = false
-			end
+		for _, b in ipairs(tabButtons) do
+			b.BackgroundColor3 = Color3.fromRGB(28, 28, 44)
+			b.Indicator.Visible = false
 		end
 		btn.BackgroundColor3 = Color3.fromRGB(42, 42, 62)
 		ind.Visible = true
 		for k, v in pairs(tabFrames) do v.Visible = (k == name) end
 		setStatus(name .. " loaded")
+		if name == "Players" then
+			task.delay(0.1, function()
+				refreshPlayerList()
+			end)
+		end
 	end)
 end
 
--- Content Frame
-local content = Instance.new("Frame", main)
-content.Size = UDim2.new(1, 0, 1, -94)
-content.Position = UDim2.new(0, 0, 0, 94)
-content.BackgroundTransparency = 1
 
--- Minimize logic
 local minimized = false
 minBtn.MouseButton1Click:Connect(function()
 	minimized = not minimized
@@ -234,10 +360,7 @@ minBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
--- ────────────────────────────────────────────────────────────────
 -- Remotes Tab
--- ────────────────────────────────────────────────────────────────
-
 local remotesTab = Instance.new("Frame", content)
 remotesTab.Size = UDim2.new(1, 0, 1, 0)
 remotesTab.BackgroundTransparency = 1
@@ -311,7 +434,6 @@ local function addRemote(remote)
 	row.Size = UDim2.new(1, 0, 0, 40)
 	row.BackgroundTransparency = 1
 	row.Parent = remotesScroll
-
 	local btn = Instance.new("TextButton", row)
 	btn.Size = UDim2.new(0.55, 0, 1, 0)
 	btn.BackgroundColor3 = Color3.fromRGB(36, 36, 56)
@@ -323,11 +445,9 @@ local function addRemote(remote)
 	btn.TextSize = 15
 	btn.TextXAlignment = Enum.TextXAlignment.Left
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
-
 	local pad = Instance.new("UIPadding", btn)
 	pad.PaddingLeft = UDim.new(0, 14)
 	pad.PaddingRight = UDim.new(0, 14)
-
 	local singleArg = Instance.new("TextBox", row)
 	singleArg.Size = UDim2.new(0.22, -5, 0.9, 0)
 	singleArg.Position = UDim2.new(0.57, 5, 0.05, 0)
@@ -339,7 +459,6 @@ local function addRemote(remote)
 	singleArg.Font = Enum.Font.Gotham
 	singleArg.TextSize = 13
 	Instance.new("UICorner", singleArg).CornerRadius = UDim.new(0, 6)
-
 	local fireOneBtn = Instance.new("TextButton", row)
 	fireOneBtn.Size = UDim2.new(0.20, -5, 0.9, 0)
 	fireOneBtn.Position = UDim2.new(0.80, 5, 0.05, 0)
@@ -349,7 +468,6 @@ local function addRemote(remote)
 	fireOneBtn.Font = Enum.Font.GothamBold
 	fireOneBtn.TextSize = 13
 	Instance.new("UICorner", fireOneBtn).CornerRadius = UDim.new(0, 6)
-
 	fireOneBtn.MouseButton1Click:Connect(function()
 		local txt = singleArg.Text:lower()
 		local arg
@@ -358,7 +476,6 @@ local function addRemote(remote)
 		elseif txt == "false" then arg = false
 		elseif tonumber(txt) then arg = tonumber(txt)
 		else arg = txt end
-
 		local success, err = pcall(function()
 			if remote:IsA("RemoteEvent") then
 				remote:FireServer(arg)
@@ -372,7 +489,6 @@ local function addRemote(remote)
 			setStatus("Failed: " .. tostring(err))
 		end
 	end)
-
 	btn.MouseButton1Click:Connect(function()
 		local line = getFullExampleLine(remote)
 		fireExampleBox.Text = line
@@ -387,7 +503,6 @@ local function addRemote(remote)
 			end)
 		end
 	end)
-
 	table.insert(remoteButtons, row)
 end
 
@@ -426,7 +541,6 @@ fireAllBtn.MouseButton1Click:Connect(function()
 	elseif txt == "false" then arg = false
 	elseif tonumber(txt) then arg = tonumber(txt)
 	else arg = txt end
-
 	local ok, fail = 0, 0
 	for _, obj in ipairs(game:GetDescendants()) do
 		if obj:IsA("RemoteEvent") and not isBlacklisted(obj.Name) then
@@ -467,10 +581,7 @@ end
 
 rescanBtn.MouseButton1Click:Connect(scanRemotes)
 
--- ────────────────────────────────────────────────────────────────
 -- Cheats Tab
--- ────────────────────────────────────────────────────────────────
-
 local cheatsTab = Instance.new("Frame", content)
 cheatsTab.Size = UDim2.new(1, 0, 1, 0)
 cheatsTab.BackgroundTransparency = 1
@@ -494,12 +605,22 @@ end)
 local states = {
 	ESP = false,
 	Aimbot = false,
+	SilentAim = false,
+	Tracers = false,
+	CFrameSpeed = false,
+	BunnyHop = false,
 	Fly = false,
 	Noclip = false,
 	InfJump = false,
 	GodMode = false,
 	Fullbright = false,
-	Spin = false
+	Spin = false,
+	NoCooldown = false,
+	AntiAFK = false,
+	AntiKick = false,
+	FakeLag = false,
+	CustomCrosshair = false,
+	HitMarkers = false,
 }
 
 local targets = {
@@ -508,35 +629,40 @@ local targets = {
 	MaxHealth = 100,
 	FOV = 70,
 	FlySpeed = 50,
-	SpinSpeed = 360
+	SpinSpeed = 360,
+	SilentAimFOV = 14,
+	SilentAimSmoothness = 0.16,
+	TracersThickness = 1,
+	CFrameSpeedValue = 50,
+	BunnyHopSpeed = 50,
+	FakeLagDelay = 0.1
 }
 
 local connections = {}
 local aimbotConnection
 local lastTraceBeam = nil
+local tracers = {}
+local crosshairLines = {}
+local hitMarkers = {}
+local hitSound = Instance.new("Sound")
+hitSound.SoundId = "rbxassetid://160432334"
+hitSound.Parent = gui
 
--- ────────────────────────────────────────────────────────────────
--- ESP — team color + default fallback + color picker
--- ────────────────────────────────────────────────────────────────
-
-local defaultOutlineColor = Color3.fromRGB(0, 255, 100)  -- lime green fallback
-
+local silentAimPartPriority = "Head"
+local defaultOutlineColor = Color3.fromRGB(0, 255, 100)
 local espConnections = {}
+local oldNamecall
+local oldKick
+local aimTeamMode = "Enemies"
+local toggleButtons = {}
 
 local function getPlayerOutlineColor(plr)
-	if plr.Team and plr.TeamColor then
-		return plr.TeamColor.Color
-	end
+	if plr.Team and plr.TeamColor then return plr.TeamColor.Color end
 	return defaultOutlineColor
 end
 
 local function addHighlight(character, plr)
-	if not character then return end
-
-	if character:FindFirstChild("PlayerHighlight") then
-		return
-	end
-
+	if not character or character:FindFirstChild("PlayerHighlight") then return end
 	local h = Instance.new("Highlight")
 	h.Name = "PlayerHighlight"
 	h.FillTransparency = 1
@@ -548,42 +674,29 @@ end
 
 local function setupPlayer(plr)
 	if plr == player then return end
-
-	if plr.Character then
-		addHighlight(plr.Character, plr)
-	end
-
-	local conn = plr.CharacterAdded:Connect(function(char)
-		addHighlight(char, plr)
-	end)
-
+	if plr.Character then addHighlight(plr.Character, plr) end
+	local conn = plr.CharacterAdded:Connect(function(char) addHighlight(char, plr) end)
 	espConnections[plr] = conn
 end
 
 local function toggleESP(enable)
-	states.ESP = enable
-
 	if enable then
-		setStatus("ESP ON (Team colors)")
-
+		setStatus("ESP ON")
 		for _, plr in ipairs(Players:GetPlayers()) do
 			setupPlayer(plr)
 		end
-
 		if not espConnections["PlayerAdded"] then
 			local addedConn = Players.PlayerAdded:Connect(setupPlayer)
 			espConnections["PlayerAdded"] = addedConn
 		end
 	else
 		setStatus("ESP OFF")
-
 		for _, conn in pairs(espConnections) do
 			if typeof(conn) == "RBXScriptConnection" then
 				conn:Disconnect()
 			end
 		end
 		espConnections = {}
-
 		for _, plr in ipairs(Players:GetPlayers()) do
 			if plr.Character then
 				local h = plr.Character:FindFirstChild("PlayerHighlight")
@@ -604,9 +717,19 @@ Players.PlayerRemoving:Connect(function(plr)
 	end
 end)
 
--- ────────────────────────────────────────────────────────────────
--- Aimbot (unchanged)
--- ────────────────────────────────────────────────────────────────
+local function canSee(targetPart)
+	if not targetPart then return false end
+	local rayParams = RaycastParams.new()
+	rayParams.FilterDescendantsInstances = {player.Character}
+	rayParams.FilterType = Enum.RaycastFilterType.Exclude
+	rayParams.IgnoreWater = true
+	local result = workspace:Raycast(
+		camera.CFrame.Position,
+		(targetPart.Position - camera.CFrame.Position),
+		rayParams
+	)
+	return result and result.Instance:IsDescendantOf(targetPart.Parent)
+end
 
 local function getClosestTarget(maxFovDeg)
 	local bestPart = nil
@@ -614,28 +737,28 @@ local function getClosestTarget(maxFovDeg)
 	local camPos = camera.CFrame.Position
 	local camLook = camera.CFrame.LookVector
 	local maxCos = math.cos(math.rad(maxFovDeg or 14))
-
-	for _, plr in Players:GetPlayers() do
+	for _, plr in ipairs(Players:GetPlayers()) do
 		if plr == player or not plr.Character then continue end
-		local head = plr.Character:FindFirstChild("Head") or plr.Character:FindFirstChild("HumanoidRootPart")
-		if not head then continue end
-		local vec = (head.Position - camPos).Unit
+		local isEnemy = (not plr.Team) or (player.Team ~= plr.Team)
+		if aimTeamMode == "Enemies" and not isEnemy then continue end
+		if aimTeamMode == "Teammates" and isEnemy then continue end
+		local part = plr.Character:FindFirstChild(silentAimPartPriority) or plr.Character:FindFirstChild("HumanoidRootPart")
+		if not part then continue end
+		local vec = (part.Position - camPos).Unit
 		local dot = camLook:Dot(vec)
-		if dot > maxCos and dot > bestDot then
+		if dot > maxCos and dot > bestDot and canSee(part) then
 			bestDot = dot
-			bestPart = head
+			bestPart = part
 		end
 	end
 	return bestPart
 end
 
 local function toggleAimbot(on)
-	states.Aimbot = on
 	if on then
 		setStatus("Aimbot ON")
 		if aimbotConnection then aimbotConnection:Disconnect() end
 		aimbotConnection = RunService.RenderStepped:Connect(function()
-			if not states.Aimbot then return end
 			local target = getClosestTarget(14)
 			if target then
 				local targetCF = CFrame.new(camera.CFrame.Position, target.Position)
@@ -678,9 +801,131 @@ local function toggleAimbot(on)
 	end
 end
 
--- ────────────────────────────────────────────────────────────────
--- Other cheats (Fly, Noclip, etc.)
--- ────────────────────────────────────────────────────────────────
+local function toggleSilentAim(on)
+	local success, err = pcall(function()
+		if typeof(getrawmetatable) ~= "function" then
+			setStatus("Silent Aim requires exploit support")
+			states.SilentAim = false
+			return
+		end
+		local mt = getrawmetatable(game)
+		if on then
+			setStatus("Silent Aim ON")
+			oldNamecall = oldNamecall or mt.__namecall
+			if typeof(setreadonly) == "function" then setreadonly(mt, false) end
+			mt.__namecall = function(self, ...)
+				local args = {...}
+				local method = getnamecallmethod()
+				if method == "FindPartOnRayWithIgnoreList" or method == "FindPartOnRay" or method == "Raycast" then
+					local target = getClosestTarget(targets.SilentAimFOV)
+					if target then
+						local origin = args[1].Origin or args[1]
+						local direction = (target.Position - origin).Unit * (args[1].Direction.Magnitude or 999)
+						args[1] = Ray.new(origin, direction)
+						args[1] = args[1]:Lerp(Ray.new(origin, (target.Position - origin)), targets.SilentAimSmoothness)
+					end
+				end
+				return oldNamecall(self, unpack(args))
+			end
+			if typeof(setreadonly) == "function" then setreadonly(mt, true) end
+		else
+			setStatus("Silent Aim OFF")
+			if typeof(setreadonly) == "function" then setreadonly(mt, false) end
+			mt.__namecall = oldNamecall or mt.__namecall
+			if typeof(setreadonly) == "function" then setreadonly(mt, true) end
+		end
+	end)
+	if not success then
+		setStatus("Silent Aim error: " .. tostring(err))
+		states.SilentAim = false
+	end
+end
+
+local function toggleTracers(on)
+	local success, err = pcall(function()
+		if typeof(Drawing) ~= "table" then
+			setStatus("Tracers require Drawing API (exploit)")
+			states.Tracers = false
+			return
+		end
+		if on then
+			setStatus("Tracers ON")
+			connections.tracers = RunService.RenderStepped:Connect(function()
+				for _, tracer in pairs(tracers) do
+					tracer:Remove()
+				end
+				tracers = {}
+				local screenCenter = camera.ViewportSize / 2
+				for _, plr in Players:GetPlayers() do
+					if plr == player or not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then continue end
+					local root = plr.Character.HumanoidRootPart
+					local pos, onScreen = camera:WorldToViewportPoint(root.Position)
+					if onScreen then
+						local tracer = Drawing.new("Line")
+						tracer.From = screenCenter
+						tracer.To = Vector2.new(pos.X, pos.Y)
+						tracer.Color = getPlayerOutlineColor(plr)
+						tracer.Thickness = targets.TracersThickness
+						tracer.Transparency = 1
+						tracer.Visible = true
+						table.insert(tracers, tracer)
+					end
+				end
+			end)
+		else
+			setStatus("Tracers OFF")
+			if connections.tracers then connections.tracers:Disconnect() end
+			for _, tracer in pairs(tracers) do
+				tracer:Remove()
+			end
+			tracers = {}
+		end
+	end)
+	if not success then
+		setStatus("Tracers error: " .. tostring(err))
+		states.Tracers = false
+	end
+end
+
+local function toggleCFrameSpeed(on)
+	if on then
+		setStatus("CFrame Speed ON")
+		connections.cframeSpeed = RunService.Heartbeat:Connect(function(dt)
+			local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			if hrp then
+				local moveDir = Vector3.new()
+				local hum = player.Character:FindFirstChild("Humanoid")
+				if hum then moveDir = hum.MoveDirection end
+				if moveDir.Magnitude > 0 then
+					hrp.CFrame = hrp.CFrame + moveDir * targets.CFrameSpeedValue * dt
+				end
+			end
+		end)
+	else
+		setStatus("CFrame Speed OFF")
+		if connections.cframeSpeed then connections.cframeSpeed:Disconnect() end
+	end
+end
+
+local function toggleBunnyHop(on)
+	if on then
+		setStatus("Bunny Hop ON")
+		connections.bunnyHop = RunService.Stepped:Connect(function()
+			local hum = player.Character and player.Character:FindFirstChild("Humanoid")
+			if hum and hum:GetState() ~= Enum.HumanoidStateType.Jumping and UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+				hum:ChangeState(Enum.HumanoidStateType.Jumping)
+			end
+			if hum.MoveDirection.Magnitude > 0 then
+				hum.WalkSpeed = targets.BunnyHopSpeed
+			end
+		end)
+	else
+		setStatus("Bunny Hop OFF")
+		if connections.bunnyHop then connections.bunnyHop:Disconnect() end
+		local hum = player.Character and player.Character:FindFirstChild("Humanoid")
+		if hum then hum.WalkSpeed = targets.WalkSpeed end
+	end
+end
 
 local function toggleFly(on)
 	local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
@@ -691,7 +936,6 @@ local function toggleFly(on)
 		bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
 		bv.Velocity = Vector3.new()
 		bv.Parent = hrp
-
 		local bg = Instance.new("BodyGyro")
 		bg.Name = "EliteFlyBG"
 		bg.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
@@ -699,18 +943,17 @@ local function toggleFly(on)
 		bg.D = 2000
 		bg.CFrame = hrp.CFrame
 		bg.Parent = hrp
-
 		connections.fly = RunService.RenderStepped:Connect(function()
 			if not states.Fly then return end
 			bg.CFrame = camera.CFrame
 			local move = Vector3.new()
-			if UserInputService:IsKeyDown(Enum.KeyCode.W) then move += camera.CFrame.LookVector end
-			if UserInputService:IsKeyDown(Enum.KeyCode.S) then move -= camera.CFrame.LookVector end
-			if UserInputService:IsKeyDown(Enum.KeyCode.A) then move -= camera.CFrame.RightVector end
-			if UserInputService:IsKeyDown(Enum.KeyCode.D) then move += camera.CFrame.RightVector end
-			if UserInputService:IsKeyDown(Enum.KeyCode.Space) then move += Vector3.new(0,1,0) end
-			if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then move += Vector3.new(0,-1,0) end
-			bv.Velocity = move.Magnitude > 0 and move.Unit * targets.FlySpeed or Vector3.new()
+			if UserInputService:IsKeyDown(Enum.KeyCode.W) then move = move + camera.CFrame.LookVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.S) then move = move - camera.CFrame.LookVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.A) then move = move - camera.CFrame.RightVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.D) then move = move + camera.CFrame.RightVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0,1,0) end
+			if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then move = move + Vector3.new(0,-1,0) end
+			bv.Velocity = (move.Magnitude > 0) and (move.Unit * targets.FlySpeed) or Vector3.new()
 		end)
 	else
 		if connections.fly then connections.fly:Disconnect() connections.fly = nil end
@@ -724,7 +967,7 @@ local function toggleNoclip(on)
 	if on then
 		connections.noclip = RunService.Stepped:Connect(function()
 			if player.Character then
-				for _, part in player.Character:GetDescendants() do
+				for _, part in ipairs(player.Character:GetDescendants()) do
 					if part:IsA("BasePart") then
 						part.CanCollide = false
 					end
@@ -795,23 +1038,169 @@ local function toggleSpin(on)
 	end
 end
 
-local function teleportToPlayer(name)
-	name = name:lower()
-	local target
-	for _, p in Players:GetPlayers() do
-		if p.Name:lower():find(name) or p.DisplayName:lower():find(name) then
-			target = p
-			break
-		end
-	end
-	if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-		local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-		if hrp then
-			hrp.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(0, 4, 0)
-			setStatus("Teleported to " .. target.Name)
-		end
+local oldWait = wait
+local function toggleNoCooldown(on)
+	if on then
+		setStatus("No Cooldown ON")
+		wait = function() return 0 end
 	else
-		setStatus("Player not found")
+		setStatus("No Cooldown OFF")
+		wait = oldWait
+	end
+end
+
+local function toggleAntiAFK(on)
+	if on then
+		setStatus("Anti-AFK ON")
+		connections.antiAFK = RunService.Heartbeat:Connect(function()
+			if math.random(1, 300) == 1 then
+				local hum = player.Character and player.Character:FindFirstChild("Humanoid")
+				if hum then
+					hum:ChangeState(Enum.HumanoidStateType.Jumping)
+				end
+			end
+		end)
+	else
+		setStatus("Anti-AFK OFF")
+		if connections.antiAFK then connections.antiAFK:Disconnect() end
+	end
+end
+
+local function toggleAntiKick(on)
+	local success, err = pcall(function()
+		if typeof(getrawmetatable) ~= "function" then
+			setStatus("Anti-Kick requires exploit support")
+			states.AntiKick = false
+			return
+		end
+		local mt = getrawmetatable(player)
+		if on then
+			setStatus("Anti-Kick ON")
+			oldKick = oldKick or mt.__namecall
+			if typeof(setreadonly) == "function" then setreadonly(mt, false) end
+			mt.__namecall = function(self, ...)
+				if getnamecallmethod() == "Kick" then return end
+				return oldKick(self, ...)
+			end
+			if typeof(setreadonly) == "function" then setreadonly(mt, true) end
+		else
+			setStatus("Anti-Kick OFF")
+			if typeof(setreadonly) == "function" then setreadonly(mt, false) end
+			mt.__namecall = oldKick or mt.__namecall
+			if typeof(setreadonly) == "function" then setreadonly(mt, true) end
+		end
+	end)
+	if not success then
+		setStatus("Anti-Kick error: " .. tostring(err))
+		states.AntiKick = false
+	end
+end
+
+local function toggleFakeLag(on)
+	if on then
+		setStatus("Fake Lag ON")
+		local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		if not hrp then return end
+		task.spawn(function()
+			while states.FakeLag do
+				local savedCFrame = hrp.CFrame
+				local endTime = tick() + targets.FakeLagDelay
+				while tick() < endTime and states.FakeLag do
+					hrp.CFrame = savedCFrame
+					RunService.Heartbeat:Wait()
+				end
+				task.wait(0.01)
+			end
+		end)
+	else
+		setStatus("Fake Lag OFF")
+	end
+end
+
+local function toggleCustomCrosshair(on)
+	if on then
+		setStatus("Custom Crosshair ON")
+		local cross = Instance.new("Frame")
+		cross.Size = UDim2.new(0, 20, 0, 20)
+		cross.Position = UDim2.new(0.5, -10, 0.5, -10)
+		cross.BackgroundTransparency = 1
+		cross.Parent = gui
+		local h1 = Instance.new("Frame", cross)
+		h1.Size = UDim2.new(1, 0, 0, 1)
+		h1.Position = UDim2.new(0, 0, 0.5, -0.5)
+		h1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		local v1 = Instance.new("Frame", cross)
+		v1.Size = UDim2.new(0, 1, 1, 0)
+		v1.Position = UDim2.new(0.5, -0.5, 0, 0)
+		v1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		crosshairLines = {cross, h1, v1}
+	else
+		setStatus("Custom Crosshair OFF")
+		for _, line in pairs(crosshairLines) do
+			line:Destroy()
+		end
+		crosshairLines = {}
+	end
+end
+
+local playerHealths = {}
+
+local function toggleHitMarkers(on)
+	local success, err = pcall(function()
+		if typeof(Drawing) ~= "table" then
+			setStatus("Hit Markers require Drawing API (exploit)")
+			states.HitMarkers = false
+			return
+		end
+		if on then
+			setStatus("Hit Markers ON")
+			playerHealths = {}
+			for _, plr in ipairs(Players:GetPlayers()) do
+				if plr.Character and plr.Character:FindFirstChild("Humanoid") then
+					playerHealths[plr] = plr.Character.Humanoid.Health
+				end
+			end
+			connections.hitMarkers = RunService.Heartbeat:Connect(function()
+				for _, plr in ipairs(Players:GetPlayers()) do
+					if plr == player or not plr.Character or not plr.Character:FindFirstChild("Humanoid") then continue end
+					local hum = plr.Character.Humanoid
+					local oldHealth = playerHealths[plr] or hum.Health
+					if hum.Health < oldHealth then
+						hitSound:Play()
+						local marker = Drawing.new("Text")
+						marker.Text = "-" .. math.floor(oldHealth - hum.Health)
+						marker.Color = Color3.fromRGB(255, 0, 0)
+						marker.Size = 24
+						marker.Transparency = 1
+						marker.Visible = true
+						local pos = camera:WorldToViewportPoint(plr.Character.Head.Position)
+						marker.Position = Vector2.new(pos.X, pos.Y - 20)
+						table.insert(hitMarkers, marker)
+						task.spawn(function()
+							for i = 1, 20 do
+								marker.Position = marker.Position - Vector2.new(0, 1)
+								marker.Transparency = 1 - (i / 20)
+								task.wait(0.05)
+							end
+							marker:Remove()
+						end)
+					end
+					playerHealths[plr] = hum.Health
+				end
+			end)
+		else
+			setStatus("Hit Markers OFF")
+			if connections.hitMarkers then connections.hitMarkers:Disconnect() end
+			for _, marker in pairs(hitMarkers) do
+				marker:Remove()
+			end
+			hitMarkers = {}
+			playerHealths = {}
+		end
+	end)
+	if not success then
+		setStatus("HitMarkers error: " .. tostring(err))
+		states.HitMarkers = false
 	end
 end
 
@@ -822,13 +1211,13 @@ local function getAllTools()
 		return
 	end
 	local added = 0
-	for _, obj in game:GetDescendants() do
+	for _, obj in ipairs(game:GetDescendants()) do
 		if obj:IsA("Tool") then
 			if obj.Parent ~= backpack and (not player.Character or obj.Parent ~= player.Character) then
 				local clone = obj:Clone()
 				if clone then
 					clone.Parent = backpack
-					added += 1
+					added = added + 1
 				end
 			end
 		end
@@ -850,17 +1239,15 @@ end
 player.CharacterAdded:Connect(function(char)
 	task.wait(0.4)
 	applyStats()
-	if states.Fly then toggleFly(true) end
-	if states.Noclip then toggleNoclip(true) end
-	if states.GodMode then toggleGod(true) end
-	if states.Spin then toggleSpin(true) end
+	for feature, enabled in pairs(states) do
+		if enabled then
+			local toggleFunc = _G["toggle" .. feature]
+			if toggleFunc then toggleFunc(true) end
+		end
+	end
 end)
 
 if player.Character then applyStats() end
-
--- ────────────────────────────────────────────────────────────────
--- UI Controls
--- ────────────────────────────────────────────────────────────────
 
 local function createToggle(name, colorOn, colorOff, toggleFunc)
 	local frame = Instance.new("Frame")
@@ -868,17 +1255,15 @@ local function createToggle(name, colorOn, colorOff, toggleFunc)
 	frame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
 	frame.Parent = cheatsScroll
 	Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-
 	local btn = Instance.new("TextButton", frame)
 	btn.Size = UDim2.new(0.18, 0, 0.8, 0)
 	btn.Position = UDim2.new(0.02, 0, 0, 10)
-	btn.BackgroundColor3 = colorOff
-	btn.Text = "OFF"
+	btn.BackgroundColor3 = states[name] and colorOn or Color3.fromRGB(60, 60, 80)
+	btn.Text = states[name] and "ON" or "OFF"
 	btn.TextColor3 = Color3.new(1, 1, 1)
 	btn.Font = Enum.Font.GothamBold
 	btn.TextSize = 16
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
-
 	local label = Instance.new("TextLabel", frame)
 	label.Size = UDim2.new(0.78, 0, 1, 0)
 	label.Position = UDim2.new(0.22, 0, 0, 0)
@@ -888,12 +1273,23 @@ local function createToggle(name, colorOn, colorOff, toggleFunc)
 	label.Font = Enum.Font.GothamSemibold
 	label.TextSize = 17
 	label.TextXAlignment = Enum.TextXAlignment.Left
-
+	table.insert(toggleButtons, {
+		button = btn,
+		name = name,
+		colorOn = colorOn,
+		colorOff = colorOff
+	})
 	btn.MouseButton1Click:Connect(function()
-		states[name] = not states[name]
-		btn.BackgroundColor3 = states[name] and colorOn or colorOff
+		local desired = not states[name]
+		local success, result = pcall(toggleFunc, desired)
+		if success then
+			states[name] = desired
+		else
+			states[name] = false
+			setStatus("Error in " .. name .. ": " .. tostring(result))
+		end
+		btn.BackgroundColor3 = states[name] and colorOn or Color3.fromRGB(60, 60, 80)
 		btn.Text = states[name] and "ON" or "OFF"
-		toggleFunc(states[name])
 		setStatus(name .. (states[name] and " ON" or " OFF"))
 	end)
 end
@@ -904,7 +1300,6 @@ local function createSlider(name, targetKey, default, min, max)
 	frame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
 	frame.Parent = cheatsScroll
 	Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-
 	local lbl = Instance.new("TextLabel", frame)
 	lbl.Size = UDim2.new(0.45, 0, 1, 0)
 	lbl.BackgroundTransparency = 1
@@ -913,7 +1308,6 @@ local function createSlider(name, targetKey, default, min, max)
 	lbl.Font = Enum.Font.GothamSemibold
 	lbl.TextSize = 16
 	lbl.TextXAlignment = Enum.TextXAlignment.Left
-
 	local input = Instance.new("TextBox", frame)
 	input.Size = UDim2.new(0.3, 0, 0.7, 0)
 	input.Position = UDim2.new(0.48, 0, 0.15, 0)
@@ -923,7 +1317,6 @@ local function createSlider(name, targetKey, default, min, max)
 	input.Font = Enum.Font.Gotham
 	input.TextSize = 16
 	Instance.new("UICorner", input).CornerRadius = UDim.new(0, 8)
-
 	local setBtn = Instance.new("TextButton", frame)
 	setBtn.Size = UDim2.new(0.2, 0, 0.7, 0)
 	setBtn.Position = UDim2.new(0.8, 0, 0.15, 0)
@@ -933,7 +1326,6 @@ local function createSlider(name, targetKey, default, min, max)
 	setBtn.Font = Enum.Font.GothamBold
 	setBtn.TextSize = 15
 	Instance.new("UICorner", setBtn).CornerRadius = UDim.new(0, 8)
-
 	local function update()
 		local val = tonumber(input.Text)
 		if val and val >= min and val <= max then
@@ -945,29 +1337,154 @@ local function createSlider(name, targetKey, default, min, max)
 			input.Text = tostring(targets[targetKey])
 		end
 	end
-
 	input.FocusLost:Connect(update)
 	setBtn.MouseButton1Click:Connect(update)
 end
 
--- Build toggles and sliders
+local allCheatsFrame = Instance.new("Frame", cheatsScroll)
+allCheatsFrame.Size = UDim2.new(1, 0, 0, 50)
+allCheatsFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
+Instance.new("UICorner", allCheatsFrame).CornerRadius = UDim.new(0, 10)
+
+local enableAllBtn = Instance.new("TextButton", allCheatsFrame)
+enableAllBtn.Size = UDim2.new(0.48, 0, 0.8, 0)
+enableAllBtn.Position = UDim2.new(0.01, 0, 0.1, 0)
+enableAllBtn.BackgroundColor3 = Color3.fromRGB(70, 210, 90)
+enableAllBtn.Text = "Enable All"
+enableAllBtn.TextColor3 = Color3.new(1, 1, 1)
+enableAllBtn.Font = Enum.Font.GothamBold
+enableAllBtn.TextSize = 16
+Instance.new("UICorner", enableAllBtn).CornerRadius = UDim.new(0, 8)
+
+local disableAllBtn = Instance.new("TextButton", allCheatsFrame)
+disableAllBtn.Size = UDim2.new(0.48, 0, 0.8, 0)
+disableAllBtn.Position = UDim2.new(0.51, 0, 0.1, 0)
+disableAllBtn.BackgroundColor3 = Color3.fromRGB(210, 70, 70)
+disableAllBtn.Text = "Disable All"
+disableAllBtn.TextColor3 = Color3.new(1, 1, 1)
+disableAllBtn.Font = Enum.Font.GothamBold
+disableAllBtn.TextSize = 16
+Instance.new("UICorner", disableAllBtn).CornerRadius = UDim.new(0, 8)
+
+enableAllBtn.MouseButton1Click:Connect(function()
+	for _, entry in ipairs(toggleButtons) do
+		states[entry.name] = true
+		entry.button.BackgroundColor3 = entry.colorOn
+		entry.button.Text = "ON"
+	end
+	setStatus("All cheats enabled (visuals updated)")
+end)
+
+disableAllBtn.MouseButton1Click:Connect(function()
+	for _, entry in ipairs(toggleButtons) do
+		states[entry.name] = false
+		entry.button.BackgroundColor3 = entry.colorOff
+		entry.button.Text = "OFF"
+	end
+	setStatus("All cheats disabled (visuals updated)")
+end)
+
 createToggle("ESP", Color3.fromRGB(255, 80, 80), Color3.fromRGB(60, 60, 80), toggleESP)
 createToggle("Aimbot", Color3.fromRGB(255, 100, 100), Color3.fromRGB(60, 60, 80), toggleAimbot)
+createToggle("SilentAim", Color3.fromRGB(100, 255, 100), Color3.fromRGB(60, 60, 80), toggleSilentAim)
+createToggle("Tracers", Color3.fromRGB(100, 100, 255), Color3.fromRGB(60, 60, 80), toggleTracers)
+createToggle("CFrameSpeed", Color3.fromRGB(255, 200, 100), Color3.fromRGB(60, 60, 80), toggleCFrameSpeed)
+createToggle("BunnyHop", Color3.fromRGB(200, 255, 100), Color3.fromRGB(60, 60, 80), toggleBunnyHop)
 createToggle("Fly", Color3.fromRGB(100, 200, 255), Color3.fromRGB(60, 60, 80), toggleFly)
 createToggle("Noclip", Color3.fromRGB(255, 180, 100), Color3.fromRGB(60, 60, 80), toggleNoclip)
-createToggle("Inf Jump", Color3.fromRGB(180, 120, 255), Color3.fromRGB(60, 60, 80), toggleInfJump)
-createToggle("God Mode", Color3.fromRGB(255, 150, 100), Color3.fromRGB(60, 60, 80), toggleGod)
+createToggle("InfJump", Color3.fromRGB(180, 120, 255), Color3.fromRGB(60, 60, 80), toggleInfJump)
+createToggle("GodMode", Color3.fromRGB(255, 150, 100), Color3.fromRGB(60, 60, 80), toggleGod)
 createToggle("Fullbright", Color3.fromRGB(255, 255, 140), Color3.fromRGB(60, 60, 80), toggleFullbright)
 createToggle("Spin", Color3.fromRGB(220, 100, 220), Color3.fromRGB(60, 60, 80), toggleSpin)
+createToggle("NoCooldown", Color3.fromRGB(255, 100, 200), Color3.fromRGB(60, 60, 80), toggleNoCooldown)
+createToggle("AntiAFK", Color3.fromRGB(100, 255, 200), Color3.fromRGB(60, 60, 80), toggleAntiAFK)
+createToggle("AntiKick", Color3.fromRGB(200, 100, 255), Color3.fromRGB(60, 60, 80), toggleAntiKick)
+createToggle("FakeLag", Color3.fromRGB(255, 200, 200), Color3.fromRGB(60, 60, 80), toggleFakeLag)
+createToggle("CustomCrosshair", Color3.fromRGB(150, 255, 150), Color3.fromRGB(60, 60, 80), toggleCustomCrosshair)
+createToggle("HitMarkers", Color3.fromRGB(255, 150, 150), Color3.fromRGB(60, 60, 80), toggleHitMarkers)
 
+createSlider("Silent Aim FOV", "SilentAimFOV", 14, 1, 90)
+createSlider("Silent Aim Smoothness", "SilentAimSmoothness", 0.16, 0.01, 1)
+createSlider("Tracers Thickness", "TracersThickness", 1, 0.5, 5)
+createSlider("CFrame Speed", "CFrameSpeedValue", 50, 10, 500)
+createSlider("Bunny Hop Speed", "BunnyHopSpeed", 50, 16, 300)
 createSlider("Spin Speed (°/s)", "SpinSpeed", 360, 0, 20000)
 createSlider("Walk Speed", "WalkSpeed", 16, 0, 300)
 createSlider("Jump Height", "JumpHeight", 7.2, 0, 500)
 createSlider("Max Health", "MaxHealth", 100, 1, 10000)
 createSlider("FOV", "FOV", 70, 10, 150)
 createSlider("Fly Speed", "FlySpeed", 50, 10, 500)
+createSlider("Fake Lag Delay", "FakeLagDelay", 0.1, 0.01, 1)
 
--- ESP Default Color Picker (only used when no teams)
+local priorityFrame = Instance.new("Frame", cheatsScroll)
+priorityFrame.Size = UDim2.new(1, 0, 0, 50)
+priorityFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
+Instance.new("UICorner", priorityFrame).CornerRadius = UDim.new(0, 10)
+
+local priorityLabel = Instance.new("TextLabel", priorityFrame)
+priorityLabel.Size = UDim2.new(0.45, 0, 1, 0)
+priorityLabel.BackgroundTransparency = 1
+priorityLabel.Text = "Silent Aim Priority:"
+priorityLabel.TextColor3 = Color3.fromRGB(200, 220, 255)
+priorityLabel.Font = Enum.Font.GothamSemibold
+priorityLabel.TextSize = 16
+priorityLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local priorityDropdown = Instance.new("TextButton", priorityFrame)
+priorityDropdown.Size = UDim2.new(0.5, 0, 0.7, 0)
+priorityDropdown.Position = UDim2.new(0.48, 0, 0.15, 0)
+priorityDropdown.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+priorityDropdown.Text = "Head"
+priorityDropdown.TextColor3 = Color3.new(1, 1, 1)
+priorityDropdown.Font = Enum.Font.Gotham
+priorityDropdown.TextSize = 16
+Instance.new("UICorner", priorityDropdown).CornerRadius = UDim.new(0, 8)
+
+local priorities = {"Head", "HumanoidRootPart", "Torso"}
+local currentPriority = 1
+priorityDropdown.MouseButton1Click:Connect(function()
+	currentPriority = (currentPriority % #priorities) + 1
+	silentAimPartPriority = priorities[currentPriority]
+	priorityDropdown.Text = silentAimPartPriority
+	setStatus("Silent Aim Priority: " .. silentAimPartPriority)
+end)
+
+local teamModeFrame = Instance.new("Frame", cheatsScroll)
+teamModeFrame.Size = UDim2.new(1, 0, 0, 50)
+teamModeFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
+Instance.new("UICorner", teamModeFrame).CornerRadius = UDim.new(0, 10)
+
+local teamModeLabel = Instance.new("TextLabel", teamModeFrame)
+teamModeLabel.Size = UDim2.new(0.45, 0, 1, 0)
+teamModeLabel.BackgroundTransparency = 1
+teamModeLabel.Text = "Aim Team Mode:"
+teamModeLabel.TextColor3 = Color3.fromRGB(200, 220, 255)
+teamModeLabel.Font = Enum.Font.GothamSemibold
+teamModeLabel.TextSize = 16
+teamModeLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local teamModeDropdown = Instance.new("TextButton", teamModeFrame)
+teamModeDropdown.Size = UDim2.new(0.5, 0, 0.7, 0)
+teamModeDropdown.Position = UDim2.new(0.48, 0, 0.15, 0)
+teamModeDropdown.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+teamModeDropdown.Text = "Enemies"
+teamModeDropdown.TextColor3 = Color3.new(1, 1, 1)
+teamModeDropdown.Font = Enum.Font.Gotham
+teamModeDropdown.TextSize = 16
+Instance.new("UICorner", teamModeDropdown).CornerRadius = UDim.new(0, 8)
+
+teamModeDropdown.MouseButton1Click:Connect(function()
+	if aimTeamMode == "Enemies" then
+		aimTeamMode = "Teammates"
+	elseif aimTeamMode == "Teammates" then
+		aimTeamMode = "Both"
+	else
+		aimTeamMode = "Enemies"
+	end
+	teamModeDropdown.Text = aimTeamMode
+	setStatus("Aim Team Mode: " .. aimTeamMode)
+end)
+
 local colorFrame = Instance.new("Frame", cheatsScroll)
 colorFrame.Size = UDim2.new(1, 0, 0, 50)
 colorFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
@@ -1009,10 +1526,8 @@ setColorBtn.MouseButton1Click:Connect(function()
 	if r and g and b and r>=0 and r<=255 and g>=0 and g<=255 and b>=0 and b<=255 then
 		defaultOutlineColor = Color3.fromRGB(r, g, b)
 		setStatus("Default ESP color → " .. r .. "," .. g .. "," .. b)
-
-		-- Update existing non-team highlights if ESP is on
 		if states.ESP then
-			for _, plr in Players:GetPlayers() do
+			for _, plr in ipairs(Players:GetPlayers()) do
 				if plr.Character and not plr.Team then
 					local h = plr.Character:FindFirstChild("PlayerHighlight")
 					if h then
@@ -1027,7 +1542,6 @@ setColorBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Teleport To
 local tpToFrame = Instance.new("Frame", cheatsScroll)
 tpToFrame.Size = UDim2.new(1, 0, 0, 50)
 tpToFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
@@ -1072,7 +1586,6 @@ tpToBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
--- GET EVERY TOOL BUTTON
 local toolsFrame = Instance.new("Frame", cheatsScroll)
 toolsFrame.Size = UDim2.new(1, 0, 0, 60)
 toolsFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
@@ -1090,7 +1603,8 @@ Instance.new("UICorner", toolsBtn).CornerRadius = UDim.new(0, 10)
 
 toolsBtn.MouseButton1Click:Connect(getAllTools)
 
--- Final init
+
+
 task.defer(function()
 	task.wait(0.4)
 	scanRemotes()
@@ -1101,11 +1615,15 @@ task.defer(function()
 	TweenService:Create(main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 		Position = UDim2.new(0.31, 0, 0.125, 0)
 	}):Play()
-	print("Diddy Cheats loaded V1.04 - Updated remote events")
+	print("Elite Diddy Cheats V3.1 loaded")
 	setStatus("Loaded")
+	task.delay(0.8, function()
+		if currentTab == "Players" then
+			refreshPlayerList()
+		end
+	end)
 end)
 
--- Toggle GUI - Right Shift
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
 	if input.KeyCode == Enum.KeyCode.PageUp then
@@ -1113,9 +1631,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 			TweenService:Create(main, TweenInfo.new(0.4, Enum.EasingStyle.Back), {
 				Position = UDim2.new(0.31, 0, -1.2, 0)
 			}):Play()
-			task.delay(0.45, function()
-				main.Visible = false
-			end)
+			task.delay(0.45, function() main.Visible = false end)
 		else
 			main.Visible = true
 			TweenService:Create(main, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
@@ -1124,11 +1640,3 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		end
 	end
 end)
-
-
-
-
-
-
-
-
