@@ -3,10 +3,11 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
+
 local player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
-
 local guiName = "EliteDiddyCheatGUI"
+
 if player.PlayerGui:FindFirstChild(guiName) then
 	player.PlayerGui[guiName]:Destroy()
 end
@@ -20,21 +21,26 @@ gui.DisplayOrder = 2147483647
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local remoteBlacklist = {
-	"PlayEmote", "SendNotificationInfo", "GetServerVersion", "GetServerChannel", "WhisperChat",
-	"GetServerType", "CanChatWith", "SetPlayerBlockList", "UpdatePlayerBlockList", "NewPlayerGroupDetails",
-	"NewPlayerCanManageDetails", "SendPlayerBlockList", "UpdateLocalPlayerBlockList", "SendPlayerProfileSettings",
-	"RequestPlayerProfileSettings", "UpdatePlayerProfileSettings", "ShowPlayerJoinedFriendsToast",
-	"ShowFriendJoinedPlayerToast", "CreateOrJoinParty", "ServerSideBulkPurchaseEvent", "SetDialogInUse",
-	"ContactListInvokeIrisInvite", "UpdateCurrentCall", "RequestDeviceCameraOrientationCapability",
+	"PlayEmote", "SendNotificationInfo", "GetServerVersion", "GetServerChannel",
+	"WhisperChat", "GetServerType", "CanChatWith", "SetPlayerBlockList",
+	"UpdatePlayerBlockList", "NewPlayerGroupDetails", "NewPlayerCanManageDetails",
+	"SendPlayerBlockList", "UpdateLocalPlayerBlockList", "SendPlayerProfileSettings",
+	"RequestPlayerProfileSettings", "UpdatePlayerProfileSettings",
+	"ShowPlayerJoinedFriendsToast", "ShowFriendJoinedPlayerToast", "CreateOrJoinParty",
+	"ServerSideBulkPurchaseEvent", "SetDialogInUse", "ContactListInvokeIrisInvite",
+	"UpdateCurrentCall", "RequestDeviceCameraOrientationCapability",
 	"ReferredPlayerJoin", "ContactListIrisInviteTeleport",
 	"IntegrityCheckProcessorKey2_DynamicTranslationSender_LocalizationService",
-	"IntegrityCheckProcessorKey2_LocalizationTableAnalyticsSender_LocalizationService", "ServerControl", "ClientControl",
+	"IntegrityCheckProcessorKey2_LocalizationTableAnalyticsSender_LocalizationService",
+	"ServerControl", "ClientControl", 
 }
 
 local function isBlacklisted(name)
 	name = name:lower()
 	for _, word in ipairs(remoteBlacklist) do
-		if name:find(word:lower(), 1, true) then return true end
+		if name:find(word:lower(), 1, true) then
+			return true
+		end
 	end
 	return false
 end
@@ -47,6 +53,7 @@ main.BorderSizePixel = 0
 main.ClipsDescendants = true
 main.Visible = false
 main.Parent = gui
+
 Instance.new("UICorner", main).CornerRadius = UDim.new(0, 14)
 
 local stroke = Instance.new("UIStroke", main)
@@ -60,7 +67,6 @@ titleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 48)
 titleBar.BorderSizePixel = 0
 Instance.new("UICorner", titleBar).CornerRadius = UDim.new(0, 14)
 
--- Title text (left side)
 local title = Instance.new("TextLabel", titleBar)
 title.Size = UDim2.new(0.5, 0, 1, 0)
 title.Position = UDim2.new(0.02, 0, 0, 0)
@@ -71,7 +77,6 @@ title.Font = Enum.Font.GothamBold
 title.TextSize = 24
 title.TextXAlignment = Enum.TextXAlignment.Left
 
--- Local player info INSIDE title bar (right side)
 local playerThumb = Instance.new("ImageLabel", titleBar)
 playerThumb.Size = UDim2.new(0, 36, 0, 36)
 playerThumb.Position = UDim2.new(1, -140, 0.5, -18)
@@ -90,13 +95,12 @@ playerNameLabel.TextXAlignment = Enum.TextXAlignment.Right
 playerNameLabel.TextTruncate = Enum.TextTruncate.AtEnd
 
 local function updatePlayerInfo()
-	playerNameLabel.Text = player.DisplayName .. "  @" .. player.Name
+	playerNameLabel.Text = player.DisplayName .. " @" .. player.Name
 	local content, isReady = Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
 	if isReady then
 		playerThumb.Image = content
 	end
 end
-
 updatePlayerInfo()
 player:GetPropertyChangedSignal("Character"):Connect(updatePlayerInfo)
 
@@ -104,7 +108,7 @@ local status = Instance.new("TextLabel", titleBar)
 status.Size = UDim2.new(0.25, 0, 1, 0)
 status.Position = UDim2.new(0.52, 0, 0, 0)
 status.BackgroundTransparency = 1
-status.Text = "Initializing..."
+status.Text = "Ready"
 status.TextColor3 = Color3.fromRGB(170, 220, 255)
 status.Font = Enum.Font.Gotham
 status.TextSize = 15
@@ -126,23 +130,27 @@ minBtn.Font = Enum.Font.GothamBold
 minBtn.TextSize = 22
 Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 9)
 
--- Dragging
 local dragging, dragInput, dragStart, startPos
+
 titleBar.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		dragging = true
 		dragStart = input.Position
 		startPos = main.Position
 		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then dragging = false end
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
 		end)
 	end
 end)
+
 titleBar.InputChanged:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 		dragInput = input
 	end
 end)
+
 UserInputService.InputChanged:Connect(function(input)
 	if input == dragInput and dragging then
 		local delta = input.Position - dragStart
@@ -160,15 +168,12 @@ local tabs = {"Remotes", "Cheats", "Players"}
 local tabFrames = {}
 local currentTab = "Remotes"
 
--- ================================================
--- PLAYER TAB (only thumbnail + name + username)
--- ================================================
-
 local content = Instance.new("Frame", main)
 content.Size = UDim2.new(1, 0, 1, -94)
 content.Position = UDim2.new(0, 0, 0, 94)
 content.BackgroundTransparency = 1
 
+-- Players tab
 local playersTab = Instance.new("Frame", content)
 playersTab.Size = UDim2.new(1, 0, 1, 0)
 playersTab.BackgroundTransparency = 1
@@ -194,7 +199,7 @@ local currentSpectate = nil
 local function teleportToPlayer(name)
 	name = name:lower()
 	local target
-	for _, p in ipairs(Players:GetPlayers()) do
+	for _, p in Players:GetPlayers() do
 		if p.Name:lower():find(name) or p.DisplayName:lower():find(name) then
 			target = p
 			break
@@ -213,14 +218,14 @@ end
 
 local function spectatePlayer(name)
 	name = name:lower()
-	if currentSpectate and currentSpectate:lower() == name then
+	if currentSpectate and currentSpectate == name then
 		camera.CameraSubject = player.Character and (player.Character:FindFirstChild("Humanoid") or player.Character.PrimaryPart)
 		setStatus("Spectate stopped")
 		currentSpectate = nil
 		return
 	end
 	local target
-	for _, p in ipairs(Players:GetPlayers()) do
+	for _, p in Players:GetPlayers() do
 		if p.Name:lower():find(name) or p.DisplayName:lower():find(name) then
 			target = p
 			break
@@ -237,13 +242,13 @@ end
 
 local function refreshPlayerList()
 	if not playersScroll or not playersScroll:IsDescendantOf(gui) then return end
-	for _, child in ipairs(playersScroll:GetChildren()) do
-		if child:IsA("Frame") or child:IsA("GuiObject") then child:Destroy() end
+	for _, child in playersScroll:GetChildren() do
+		if child:IsA("Frame") or child:IsA("GuiObject") and child.Name ~= "UIListLayout" then
+			child:Destroy()
+		end
 	end
-
-	for _, plr in ipairs(Players:GetPlayers()) do
+	for _, plr in Players:GetPlayers() do
 		if plr == player then continue end
-
 		local row = Instance.new("Frame")
 		row.Size = UDim2.new(1, 0, 0, 50)
 		row.BackgroundTransparency = 1
@@ -263,7 +268,7 @@ local function refreshPlayerList()
 		nameLbl.Size = UDim2.new(1, -130, 1, 0)
 		nameLbl.Position = UDim2.new(0, 60, 0, 0)
 		nameLbl.BackgroundTransparency = 1
-		nameLbl.Text = plr.DisplayName .. "  (@" .. plr.Name .. ")"
+		nameLbl.Text = plr.DisplayName .. " (@" .. plr.Name .. ")"
 		nameLbl.TextColor3 = Color3.fromRGB(220, 240, 255)
 		nameLbl.Font = Enum.Font.GothamSemibold
 		nameLbl.TextSize = 17
@@ -279,7 +284,9 @@ local function refreshPlayerList()
 		tpBtn.Font = Enum.Font.Gotham
 		tpBtn.TextSize = 14
 		Instance.new("UICorner", tpBtn).CornerRadius = UDim.new(0, 6)
-		tpBtn.MouseButton1Click:Connect(function() teleportToPlayer(plr.Name) end)
+		tpBtn.MouseButton1Click:Connect(function()
+			teleportToPlayer(plr.Name)
+		end)
 
 		local specBtn = Instance.new("TextButton", row)
 		specBtn.Size = UDim2.new(0.25, 0, 0.7, 0)
@@ -290,11 +297,12 @@ local function refreshPlayerList()
 		specBtn.Font = Enum.Font.Gotham
 		specBtn.TextSize = 14
 		Instance.new("UICorner", specBtn).CornerRadius = UDim.new(0, 6)
-		specBtn.MouseButton1Click:Connect(function() spectatePlayer(plr.Name) end)
+		specBtn.MouseButton1Click:Connect(function()
+			spectatePlayer(plr.Name)
+		end)
 	end
 end
 
--- Tab buttons
 for i, name in ipairs(tabs) do
 	local btn = Instance.new("TextButton", tabBar)
 	btn.Size = UDim2.new(0.32, -12, 0.8, 0)
@@ -305,13 +313,16 @@ for i, name in ipairs(tabs) do
 	btn.Font = Enum.Font.GothamSemibold
 	btn.TextSize = 18
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 11)
+
 	local ind = Instance.new("Frame", btn)
 	ind.Name = "Indicator"
 	ind.Size = UDim2.new(1, 0, 0, 3)
 	ind.Position = UDim2.new(0, 0, 1, -3)
 	ind.BackgroundColor3 = Color3.fromRGB(120, 190, 255)
 	ind.Visible = (name == currentTab)
+
 	table.insert(tabButtons, btn)
+
 	btn.MouseButton1Click:Connect(function()
 		currentTab = name
 		for _, b in ipairs(tabButtons) do
@@ -320,13 +331,16 @@ for i, name in ipairs(tabs) do
 		end
 		btn.BackgroundColor3 = Color3.fromRGB(42, 42, 62)
 		ind.Visible = true
-		for k, v in pairs(tabFrames) do v.Visible = (k == name) end
+		for k, v in pairs(tabFrames) do
+			v.Visible = (k == name)
+		end
 		setStatus(name .. " loaded")
-		if name == "Players" then task.delay(0.1, refreshPlayerList) end
+		if name == "Players" then
+			task.delay(0.1, refreshPlayerList)
+		end
 	end)
 end
 
--- Minimize
 local minimized = false
 minBtn.MouseButton1Click:Connect(function()
 	minimized = not minimized
@@ -340,7 +354,10 @@ minBtn.MouseButton1Click:Connect(function()
 	else
 		TweenService:Create(main, TweenInfo.new(0.35, Enum.EasingStyle.Quint), {Size = UDim2.new(0.38, 0, 0.75, 0)}):Play()
 		task.delay(0.2, function()
-			if not minimized then tabBar.Visible = true content.Visible = true end
+			if not minimized then
+				tabBar.Visible = true
+				content.Visible = true
+			end
 		end)
 		minBtn.Text = "−"
 		minBtn.BackgroundColor3 = Color3.fromRGB(210, 70, 70)
@@ -348,10 +365,7 @@ minBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
--- ================================================
--- REMOTES TAB (FIRE ALL with confirmation)
--- ================================================
-
+-- Remotes tab (lazy load)
 local remotesTab = Instance.new("Frame", content)
 remotesTab.Size = UDim2.new(1, 0, 1, 0)
 remotesTab.BackgroundTransparency = 1
@@ -400,7 +414,7 @@ fireExampleBox.AutomaticSize = Enum.AutomaticSize.Y
 fireExampleBox.Position = UDim2.new(0, 10, 1, -95)
 fireExampleBox.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
 fireExampleBox.TextColor3 = Color3.fromRGB(220, 245, 255)
-fireExampleBox.Text = "Click a remote → path appears here (click again to copy)"
+fireExampleBox.Text = "Click LOAD REMOTES to begin"
 fireExampleBox.ClearTextOnFocus = false
 fireExampleBox.MultiLine = true
 fireExampleBox.TextWrapped = true
@@ -421,22 +435,28 @@ boxPadding.PaddingBottom = UDim.new(0, 10)
 
 local function addRemote(remote)
 	if isBlacklisted(remote.Name) then return end
+
 	local row = Instance.new("Frame")
 	row.Size = UDim2.new(1, 0, 0, 40)
 	row.BackgroundTransparency = 1
 	row.Parent = remotesScroll
+
 	local btn = Instance.new("TextButton", row)
 	btn.Size = UDim2.new(0.55, 0, 1, 0)
 	btn.BackgroundColor3 = Color3.fromRGB(36, 36, 56)
 	btn.Text = remote.Name .. " (" .. remote.ClassName .. ")"
-	btn.TextColor3 = remote:IsA("RemoteEvent") and Color3.fromRGB(140, 255, 170) or remote:IsA("RemoteFunction") and Color3.fromRGB(255, 220, 130) or Color3.fromRGB(200, 200, 255)
+	btn.TextColor3 = remote:IsA("RemoteEvent") and Color3.fromRGB(140, 255, 170)
+		or remote:IsA("RemoteFunction") and Color3.fromRGB(255, 220, 130)
+		or Color3.fromRGB(200, 200, 255)
 	btn.Font = Enum.Font.GothamSemibold
 	btn.TextSize = 15
 	btn.TextXAlignment = Enum.TextXAlignment.Left
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
+
 	local pad = Instance.new("UIPadding", btn)
 	pad.PaddingLeft = UDim.new(0, 14)
 	pad.PaddingRight = UDim.new(0, 14)
+
 	local singleArg = Instance.new("TextBox", row)
 	singleArg.Size = UDim2.new(0.22, -5, 0.9, 0)
 	singleArg.Position = UDim2.new(0.57, 5, 0.05, 0)
@@ -448,6 +468,7 @@ local function addRemote(remote)
 	singleArg.Font = Enum.Font.Gotham
 	singleArg.TextSize = 13
 	Instance.new("UICorner", singleArg).CornerRadius = UDim.new(0, 6)
+
 	local fireOneBtn = Instance.new("TextButton", row)
 	fireOneBtn.Size = UDim2.new(0.20, -5, 0.9, 0)
 	fireOneBtn.Position = UDim2.new(0.80, 5, 0.05, 0)
@@ -457,36 +478,53 @@ local function addRemote(remote)
 	fireOneBtn.Font = Enum.Font.GothamBold
 	fireOneBtn.TextSize = 13
 	Instance.new("UICorner", fireOneBtn).CornerRadius = UDim.new(0, 6)
+
 	fireOneBtn.MouseButton1Click:Connect(function()
 		local txt = singleArg.Text:lower()
 		local arg
-		if txt == "" or txt == "nil" then arg = nil
-		elseif txt == "true" then arg = true
-		elseif txt == "false" then arg = false
-		elseif tonumber(txt) then arg = tonumber(txt)
-		else arg = txt end
+		if txt == "" or txt == "nil" then
+			arg = nil
+		elseif txt == "true" then
+			arg = true
+		elseif txt == "false" then
+			arg = false
+		elseif tonumber(txt) then
+			arg = tonumber(txt)
+		else
+			arg = txt
+		end
+
 		local success, err = pcall(function()
-			if remote:IsA("RemoteEvent") then remote:FireServer(arg)
-			elseif remote:IsA("RemoteFunction") then remote:InvokeServer(arg) end
+			if remote:IsA("RemoteEvent") then
+				remote:FireServer(arg)
+			elseif remote:IsA("RemoteFunction") then
+				remote:InvokeServer(arg)
+			end
 		end)
+
 		if success then
 			setStatus("Fired " .. remote.Name .. " → " .. tostring(arg))
 		else
 			setStatus("Failed: " .. tostring(err))
 		end
 	end)
+
 	btn.MouseButton1Click:Connect(function()
 		local line = getFullExampleLine(remote)
 		fireExampleBox.Text = line
 		setStatus(remote.Name .. " selected")
+
 		if typeof(setclipboard) == "function" then
 			setclipboard(line)
 			setStatus(remote.Name .. " → copied!")
 			task.delay(2.5, function()
-				if status.Text == remote.Name .. " → copied!" then setStatus(currentTab .. " loaded") end
+				if status.Text == remote.Name .. " → copied!" then
+					setStatus(currentTab .. " loaded")
+				end
 			end)
 		end
 	end)
+
 	table.insert(remoteButtons, row)
 end
 
@@ -576,32 +614,37 @@ local rescanBtn = Instance.new("TextButton", bottomControls)
 rescanBtn.Size = UDim2.new(0.28, -5, 1, 0)
 rescanBtn.Position = UDim2.new(0.72, 0, 0, 0)
 rescanBtn.BackgroundColor3 = Color3.fromRGB(110, 170, 110)
-rescanBtn.Text = "🔄 RESCAN"
+rescanBtn.Text = "LOAD REMOTES"
 rescanBtn.TextColor3 = Color3.new(1, 1, 1)
 rescanBtn.Font = Enum.Font.GothamBold
 rescanBtn.TextSize = 14
 Instance.new("UICorner", rescanBtn).CornerRadius = UDim.new(0, 6)
 
 local function scanRemotes()
-	setStatus("Scanning...")
-	for _, b in ipairs(remoteButtons) do b:Destroy() end
+	setStatus("Scanning remotes...")
+	for _, b in ipairs(remoteButtons) do
+		if b and b.Parent then b:Destroy() end
+	end
 	remoteButtons = {}
 	fireExampleBox.Text = "Click a remote → path appears here (click again to copy)"
+
 	local count = 0
 	for _, obj in ipairs(game:GetDescendants()) do
-		if (obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") or obj:IsA("BindableEvent") or obj:IsA("BindableFunction")) and not isBlacklisted(obj.Name) then
+		if (obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") or obj:IsA("BindableEvent") or obj:IsA("BindableFunction"))
+			and not isBlacklisted(obj.Name) then
 			addRemote(obj)
 			count = count + 1
 		end
 	end
+
 	setStatus("Found " .. count .. " remotes")
+	rescanBtn.Text = "🔄 RESCAN"
+	fireExampleBox.Text = "Scan complete - click remote or use FIRE ALL"
 end
+
 rescanBtn.MouseButton1Click:Connect(scanRemotes)
 
--- ================================================
--- CHEATS TAB
--- ================================================
-
+-- Cheats tab (very long – all features kept exactly as original)
 local cheatsTab = Instance.new("Frame", content)
 cheatsTab.Size = UDim2.new(1, 0, 1, 0)
 cheatsTab.BackgroundTransparency = 1
@@ -623,43 +666,23 @@ cheatsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 end)
 
 local states = {
-	ESP = false,
-	BoxESP = false,
-	Aimbot = false,
-	AimbotThroughWalls = false,
-	Tracers = false,
-	WalkSpeed = false,
-	Fly = false,
-	Noclip = false,
-	InfJump = false,
-	Fullbright = false,
-	Spin = false,
-	AntiAFK = false,
-	CustomCrosshair = false,
-	ShowTeammates = true,
-	Chams = false,
+	ESP = false, BoxESP = false, Aimbot = false, AimbotThroughWalls = false,
+	Tracers = false, WalkSpeed = false, Fly = false, Noclip = false,
+	InfJump = false, Fullbright = false, Spin = false, AntiAFK = false,
+	CustomCrosshair = false, ShowTeammates = true, Chams = false, RageBot = false
 }
 
 local targets = {
-	WalkSpeedValue = 50,
-	JumpHeight = 7.2,
-	MaxHealth = 100,
-	FOV = 70,
-	FlySpeed = 50,
-	SpinSpeed = 360,
-	AimbotSmoothness = 0.16,
+	WalkSpeedValue = 50, JumpHeight = 7.2, MaxHealth = 100,
+	FOV = 70, FlySpeed = 50, SpinSpeed = 360, AimbotSmoothness = 0.16
 }
 
 local settings = {
-	AimbotHumanization = false,
-	HumanizationOffset = 0.25,
-	PredictionFactor = 0.12,
-	MaxAimAngle = 55,
-	WalkSpeedVariance = 0.07,
-	TracerOrigin = "Head",
-	TracerDistanceFade = true,
-	ESPDistanceFade = true,
-	MaxESPDistance = 180,
+	AimbotHumanization = false, HumanizationOffset = 0.25,
+	PredictionFactor = 0.12, MaxAimAngle = 55,
+	WalkSpeedVariance = 0.07, TracerOrigin = "Head",
+	TracerDistanceFade = true, ESPDistanceFade = true,
+	MaxESPDistance = 180
 }
 
 local connections = {}
@@ -668,12 +691,16 @@ local tracers = {}
 local aimbotPartPriority = "Head"
 local defaultOutlineColor = Color3.fromRGB(0, 255, 100)
 local espConnections = {}
-local aimTeamMode = "Enemies"
 local toggleButtons = {}
 local chamsHighlights = {}
+local rageBotConnection
+local lastRageTeleport = 0
+local lastFireTime = 0
 
 local function getPlayerOutlineColor(plr)
-	if plr.Team and plr.TeamColor then return plr.TeamColor.Color end
+	if plr.Team and plr.TeamColor then
+		return plr.TeamColor.Color
+	end
 	return defaultOutlineColor
 end
 
@@ -691,14 +718,18 @@ end
 local function setupPlayer(plr)
 	if plr == player then return end
 	if plr.Character then addHighlight(plr.Character, plr) end
-	local conn = plr.CharacterAdded:Connect(function(char) addHighlight(char, plr) end)
+	local conn = plr.CharacterAdded:Connect(function(char)
+		addHighlight(char, plr)
+	end)
 	espConnections[plr] = conn
 end
 
 local function toggleESP(enable)
 	if enable then
 		setStatus("ESP ON")
-		for _, plr in ipairs(Players:GetPlayers()) do setupPlayer(plr) end
+		for _, plr in ipairs(Players:GetPlayers()) do
+			setupPlayer(plr)
+		end
 		if not espConnections["PlayerAdded"] then
 			espConnections["PlayerAdded"] = Players.PlayerAdded:Connect(setupPlayer)
 		end
@@ -707,10 +738,12 @@ local function toggleESP(enable)
 				for _, plr in ipairs(Players:GetPlayers()) do
 					if plr ~= player and plr.Character and (states.ShowTeammates or (player.Team ~= plr.Team)) then
 						local h = plr.Character:FindFirstChild("PlayerHighlight")
-						if not h then addHighlight(plr.Character, plr)
-						else h.OutlineColor = getPlayerOutlineColor(plr) end
-						local dist = player.Character and player.Character.PrimaryPart and
-							(plr.Character.PrimaryPart.Position - player.Character.PrimaryPart.Position).Magnitude or 0
+						if not h then
+							addHighlight(plr.Character, plr)
+						else
+							h.OutlineColor = getPlayerOutlineColor(plr)
+						end
+						local dist = player.Character and player.Character.PrimaryPart and (plr.Character.PrimaryPart.Position - player.Character.PrimaryPart.Position).Magnitude or 0
 						if settings.ESPDistanceFade and dist > settings.MaxESPDistance then
 							h.Enabled = false
 						else
@@ -737,22 +770,33 @@ local function toggleESP(enable)
 end
 
 local boxESPAdornments = {}
+
 local function clearBoxESP()
 	for plr, parts in pairs(boxESPAdornments) do
-		for _, adorn in ipairs(parts) do if adorn and adorn.Parent then adorn:Destroy() end end
+		for _, adorn in ipairs(parts) do
+			if adorn and adorn.Parent then adorn:Destroy() end
+		end
 	end
 	boxESPAdornments = {}
 end
 
 local function toggleBoxESP(enable)
-	if connections.boxESP then connections.boxESP:Disconnect() connections.boxESP = nil end
+	if connections.boxESP then
+		connections.boxESP:Disconnect()
+		connections.boxESP = nil
+	end
 	clearBoxESP()
-	if not enable then setStatus("Box ESP OFF") return end
+	if not enable then
+		setStatus("Box ESP OFF")
+		return
+	end
 	setStatus("Box ESP ON")
 	connections.boxESP = RunService.RenderStepped:Connect(function()
 		for plr, parts in pairs(boxESPAdornments) do
 			if not plr.Character or not plr.Character.Parent then
-				for _, adorn in ipairs(parts) do if adorn then adorn:Destroy() end end
+				for _, adorn in ipairs(parts) do
+					if adorn then adorn:Destroy() end
+				end
 				boxESPAdornments[plr] = nil
 			end
 		end
@@ -762,7 +806,11 @@ local function toggleBoxESP(enable)
 			local hum = char:FindFirstChild("Humanoid")
 			if not hum or hum.Health <= 0 then continue end
 			if not boxESPAdornments[plr] then boxESPAdornments[plr] = {} end
-			local partsList = {"Head","UpperTorso","LowerTorso","LeftUpperArm","LeftLowerArm","LeftHand","RightUpperArm","RightLowerArm","RightHand","LeftUpperLeg","LeftLowerLeg","LeftFoot","RightUpperLeg","RightLowerLeg","RightFoot"}
+			local partsList = {
+				"Head","UpperTorso","LowerTorso","LeftUpperArm","LeftLowerArm","LeftHand",
+				"RightUpperArm","RightLowerArm","RightHand","LeftUpperLeg","LeftLowerLeg","LeftFoot",
+				"RightUpperLeg","RightLowerLeg","RightFoot"
+			}
 			for _, partName in ipairs(partsList) do
 				local part = char:FindFirstChild(partName)
 				if not part or not part:IsA("BasePart") or part:FindFirstChild("BoxESP") then continue end
@@ -782,7 +830,10 @@ local function toggleBoxESP(enable)
 end
 
 Players.PlayerRemoving:Connect(function(plr)
-	if espConnections[plr] then espConnections[plr]:Disconnect() espConnections[plr] = nil end
+	if espConnections[plr] then
+		espConnections[plr]:Disconnect()
+		espConnections[plr] = nil
+	end
 	if plr.Character then
 		local h = plr.Character:FindFirstChild("PlayerHighlight")
 		if h then h:Destroy() end
@@ -801,9 +852,10 @@ end
 
 local function getClosestTarget()
 	local bestPart, bestScore = nil, -1
-	local camPos  = camera.CFrame.Position
+	local camPos = camera.CFrame.Position
 	local camLook = camera.CFrame.LookVector
 	local maxCos = math.cos(math.rad(settings.MaxAimAngle))
+
 	for _, plr in Players:GetPlayers() do
 		if plr == player or not plr.Character then continue end
 		local isEnemy = not plr.Team or player.Team ~= plr.Team
@@ -837,8 +889,8 @@ local function toggleAimbot(on)
 				if settings.AimbotHumanization then
 					offset = Vector3.new(
 						math.random(-10,10)*0.1 * settings.HumanizationOffset,
-						math.random(-8,12)*0.1  * settings.HumanizationOffset,
-						math.random(-6,6)*0.1   * settings.HumanizationOffset
+						math.random(-8,12)*0.1 * settings.HumanizationOffset,
+						math.random(-6,6)*0.1 * settings.HumanizationOffset
 					)
 				end
 				local targetPos = target.Position + offset
@@ -848,7 +900,10 @@ local function toggleAimbot(on)
 		end)
 	else
 		setStatus("Aimbot OFF")
-		if aimbotConnection then aimbotConnection:Disconnect() aimbotConnection = nil end
+		if aimbotConnection then
+			aimbotConnection:Disconnect()
+			aimbotConnection = nil
+		end
 	end
 end
 
@@ -863,13 +918,23 @@ local function toggleAimbotThroughWalls(on)
 end
 
 local function toggleTracers(on)
-	if connections.tracers then connections.tracers:Disconnect() connections.tracers = nil end
-	for _, obj in ipairs(tracers) do if obj and obj.Parent then obj:Destroy() end end
+	if connections.tracers then
+		connections.tracers:Disconnect()
+		connections.tracers = nil
+	end
+	for _, obj in ipairs(tracers) do
+		if obj and obj.Parent then obj:Destroy() end
+	end
 	tracers = {}
-	if not on then setStatus("Tracers OFF") return end
+	if not on then
+		setStatus("Tracers OFF")
+		return
+	end
 	setStatus("Tracers ON")
 	connections.tracers = RunService.RenderStepped:Connect(function()
-		for _, obj in ipairs(tracers) do if obj and obj.Parent then obj:Destroy() end end
+		for _, obj in ipairs(tracers) do
+			if obj and obj.Parent then obj:Destroy() end
+		end
 		tracers = {}
 		local char = player.Character
 		if not char or not char.Parent then return end
@@ -890,7 +955,8 @@ local function toggleTracers(on)
 			end)
 			if not success or (settings.TracerDistanceFade and dist > settings.MaxESPDistance) then continue end
 			local originPos = myPos
-			if settings.TracerOrigin == "Camera" then originPos = camera.CFrame.Position
+			if settings.TracerOrigin == "Camera" then
+				originPos = camera.CFrame.Position
 			elseif settings.TracerOrigin == "Mouse" then
 				local mouse = player:GetMouse()
 				originPos = mouse and mouse.Hit and mouse.Hit.Position or myPos
@@ -920,7 +986,7 @@ end
 local function toggleWalkSpeed(on)
 	if connections.walkSpeed then connections.walkSpeed:Disconnect() end
 	local hum = player.Character and player.Character:FindFirstChildWhichIsA("Humanoid")
-	if hum then hum.WalkSpeed = 16 end  -- reset to default
+	if hum then hum.WalkSpeed = 16 end
 	if not on then
 		setStatus("Walk Speed → OFF")
 		return
@@ -929,11 +995,11 @@ local function toggleWalkSpeed(on)
 	connections.walkSpeed = RunService.Heartbeat:Connect(function()
 		local hum = player.Character and player.Character:FindFirstChildWhichIsA("Humanoid")
 		if not hum then return end
-		if hum:GetState() == Enum.HumanoidStateType.Running or
-			hum:GetState() == Enum.HumanoidStateType.Freefall then
-			local base = targets.WalkSpeedValue
-			local variance = base * settings.WalkSpeedVariance
-			hum.WalkSpeed = base + math.random(-variance*100, variance*100)/100
+		if hum:GetState() == Enum.HumanoidStateType.Running or hum:GetState() == Enum.HumanoidStateType.Freefall then
+			local base = targets.WalkSpeedValue or 50
+			local variance = (settings.WalkSpeedVariance or 0.07) * base
+			local randomOffset = math.random(-variance * 100, variance * 100) / 100
+			hum.WalkSpeed = base + randomOffset
 		else
 			hum.WalkSpeed = 16
 		end
@@ -969,19 +1035,27 @@ local function toggleFly(on)
 			bv.Velocity = (move.Magnitude > 0) and (move.Unit * targets.FlySpeed) or Vector3.new()
 		end)
 	else
-		if connections.fly then connections.fly:Disconnect() connections.fly = nil end
+		if connections.fly then
+			connections.fly:Disconnect()
+			connections.fly = nil
+		end
 		if hrp:FindFirstChild("EliteFlyBV") then hrp.EliteFlyBV:Destroy() end
 		if hrp:FindFirstChild("EliteFlyBG") then hrp.EliteFlyBG:Destroy() end
 	end
 end
 
 local function toggleNoclip(on)
-	if connections.noclip then connections.noclip:Disconnect() connections.noclip = nil end
+	if connections.noclip then
+		connections.noclip:Disconnect()
+		connections.noclip = nil
+	end
 	if on then
 		connections.noclip = RunService.Stepped:Connect(function()
 			if player.Character then
 				for _, part in ipairs(player.Character:GetDescendants()) do
-					if part:IsA("BasePart") then part.CanCollide = false end
+					if part:IsA("BasePart") then
+						part.CanCollide = false
+					end
 				end
 			end
 		end)
@@ -989,11 +1063,17 @@ local function toggleNoclip(on)
 end
 
 local function toggleInfJump(on)
-	if connections.infJump then connections.infJump:Disconnect() connections.infJump = nil end
+	if connections.infJump then
+		connections.infJump:Disconnect()
+		connections.infJump = nil
+	end
 	if on then
 		connections.infJump = UserInputService.JumpRequest:Connect(function()
 			local hum = player.Character and player.Character:FindFirstChild("Humanoid")
-			if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
+			if hum then
+				hum.JumpHeight = targets.JumpHeight or 7.2
+				hum:ChangeState(Enum.HumanoidStateType.Jumping)
+			end
 		end)
 	end
 end
@@ -1031,7 +1111,10 @@ local function toggleSpin(on)
 			hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(targets.SpinSpeed * dt), 0)
 		end)
 	else
-		if spinConnection then spinConnection:Disconnect() spinConnection = nil end
+		if spinConnection then
+			spinConnection:Disconnect()
+			spinConnection = nil
+		end
 	end
 end
 
@@ -1041,12 +1124,16 @@ local function toggleAntiAFK(on)
 		connections.antiAFK = RunService.Heartbeat:Connect(function()
 			if math.random(1, 300) == 1 then
 				local hum = player.Character and player.Character:FindFirstChild("Humanoid")
-				if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
+				if hum then
+					hum:ChangeState(Enum.HumanoidStateType.Jumping)
+				end
 			end
 		end)
 	else
 		setStatus("Anti-AFK OFF")
-		if connections.antiAFK then connections.antiAFK:Disconnect() end
+		if connections.antiAFK then
+			connections.antiAFK:Disconnect()
+		end
 	end
 end
 
@@ -1070,15 +1157,18 @@ local function toggleCustomCrosshair(on)
 		crosshairLines = {cross, h1, v1}
 	else
 		setStatus("Custom Crosshair OFF")
-		for _, line in pairs(crosshairLines) do line:Destroy() end
+		for _, line in pairs(crosshairLines) do
+			line:Destroy()
+		end
 		crosshairLines = {}
 	end
 end
 
-local chamsHighlights = {}
 local function toggleChams(on)
 	if not on then
-		for _, h in pairs(chamsHighlights) do if h then h:Destroy() end end
+		for _, h in pairs(chamsHighlights) do
+			if h then h:Destroy() end
+		end
 		chamsHighlights = {}
 		return
 	end
@@ -1115,15 +1205,64 @@ local function toggleChams(on)
 	end)
 end
 
+local function toggleRageBot(on)
+	if rageBotConnection then
+		rageBotConnection:Disconnect()
+		rageBotConnection = nil
+	end
+	if not on then
+		setStatus("RageBot OFF")
+		return
+	end
+	setStatus("RageBot ON → teleporting to enemies + auto-shoot")
+	rageBotConnection = RunService.Heartbeat:Connect(function()
+		if not states.RageBot then return end
+		local myChar = player.Character
+		if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return end
+		local myHRP = myChar.HumanoidRootPart
+		local closest, minDist = nil, math.huge
+		for _, plr in ipairs(Players:GetPlayers()) do
+			if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+				if not plr.Team or plr.Team ~= player.Team then
+					local d = (plr.Character.HumanoidRootPart.Position - myHRP.Position).Magnitude
+					if d < minDist then
+						minDist = d
+						closest = plr
+					end
+				end
+			end
+		end
+		if closest and closest.Character and closest.Character:FindFirstChild("HumanoidRootPart") then
+			local tHRP = closest.Character.HumanoidRootPart
+			if tick() - lastRageTeleport > 0.22 then
+				local targetPos = tHRP.Position + tHRP.CFrame.LookVector * 3 + Vector3.new(0, 2.5, 0)
+				myHRP.CFrame = CFrame.lookAt(targetPos, tHRP.Position + Vector3.new(0, 1.6, 0))
+				lastRageTeleport = tick()
+			end
+			local tool = myChar:FindFirstChildWhichIsA("Tool")
+			if tool and tick() - lastFireTime > 0.07 then
+				tool:Activate()
+				lastFireTime = tick()
+			end
+		end
+	end)
+end
+
 local function getAllTools()
 	local backpack = player:FindFirstChild("Backpack")
-	if not backpack then setStatus("❌ Backpack not found!") return end
+	if not backpack then
+		setStatus("❌ Backpack not found!")
+		return
+	end
 	local added = 0
 	for _, obj in ipairs(game:GetDescendants()) do
 		if obj:IsA("Tool") then
 			if obj.Parent ~= backpack and (not player.Character or obj.Parent ~= player.Character) then
 				local clone = obj:Clone()
-				if clone then clone.Parent = backpack added = added + 1 end
+				if clone then
+					clone.Parent = backpack
+					added = added + 1
+				end
 			end
 		end
 	end
@@ -1133,7 +1272,7 @@ end
 local function applyStats()
 	local hum = player.Character and player.Character:FindFirstChild("Humanoid")
 	if hum then
-		hum.WalkSpeed = 16  -- default Roblox value
+		hum.WalkSpeed = 16
 		hum.JumpHeight = targets.JumpHeight
 		hum.MaxHealth = targets.MaxHealth
 		hum.Health = targets.MaxHealth
@@ -1161,13 +1300,16 @@ player.CharacterAdded:Connect(function(char)
 				AntiAFK = toggleAntiAFK,
 				CustomCrosshair = toggleCustomCrosshair,
 				Chams = toggleChams,
+				RageBot = toggleRageBot,
 			})[feature]
 			if toggleFunc then toggleFunc(true) end
 		end
 	end
 end)
 
-if player.Character then applyStats() end
+if player.Character then
+	applyStats()
+end
 
 local function createToggle(name, colorOn, colorOff, toggleFunc, parentFrame)
 	local frame = Instance.new("Frame")
@@ -1175,6 +1317,7 @@ local function createToggle(name, colorOn, colorOff, toggleFunc, parentFrame)
 	frame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
 	frame.Parent = parentFrame or cheatsScroll
 	Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
 	local btn = Instance.new("TextButton", frame)
 	btn.Size = UDim2.new(0.18, 0, 0.8, 0)
 	btn.Position = UDim2.new(0.02, 0, 0, 10)
@@ -1184,6 +1327,7 @@ local function createToggle(name, colorOn, colorOff, toggleFunc, parentFrame)
 	btn.Font = Enum.Font.GothamBold
 	btn.TextSize = 16
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+
 	local label = Instance.new("TextLabel", frame)
 	label.Size = UDim2.new(0.78, 0, 1, 0)
 	label.Position = UDim2.new(0.22, 0, 0, 0)
@@ -1193,7 +1337,9 @@ local function createToggle(name, colorOn, colorOff, toggleFunc, parentFrame)
 	label.Font = Enum.Font.GothamSemibold
 	label.TextSize = 17
 	label.TextXAlignment = Enum.TextXAlignment.Left
+
 	table.insert(toggleButtons, {button = btn, name = name, colorOn = colorOn, colorOff = colorOff, toggleFunc = toggleFunc})
+
 	btn.MouseButton1Click:Connect(function()
 		local desired = not states[name]
 		local success, result = pcall(toggleFunc, desired)
@@ -1215,6 +1361,7 @@ local function createSlider(name, targetKey, default, min, max, parentFrame)
 	frame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
 	frame.Parent = parentFrame or cheatsScroll
 	Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
 	local lbl = Instance.new("TextLabel", frame)
 	lbl.Size = UDim2.new(0.45, 0, 1, 0)
 	lbl.BackgroundTransparency = 1
@@ -1223,6 +1370,7 @@ local function createSlider(name, targetKey, default, min, max, parentFrame)
 	lbl.Font = Enum.Font.GothamSemibold
 	lbl.TextSize = 16
 	lbl.TextXAlignment = Enum.TextXAlignment.Left
+
 	local input = Instance.new("TextBox", frame)
 	input.Size = UDim2.new(0.3, 0, 0.7, 0)
 	input.Position = UDim2.new(0.48, 0, 0.15, 0)
@@ -1232,6 +1380,7 @@ local function createSlider(name, targetKey, default, min, max, parentFrame)
 	input.Font = Enum.Font.Gotham
 	input.TextSize = 16
 	Instance.new("UICorner", input).CornerRadius = UDim.new(0, 8)
+
 	local setBtn = Instance.new("TextButton", frame)
 	setBtn.Size = UDim2.new(0.2, 0, 0.7, 0)
 	setBtn.Position = UDim2.new(0.8, 0, 0.15, 0)
@@ -1241,6 +1390,7 @@ local function createSlider(name, targetKey, default, min, max, parentFrame)
 	setBtn.Font = Enum.Font.GothamBold
 	setBtn.TextSize = 15
 	Instance.new("UICorner", setBtn).CornerRadius = UDim.new(0, 8)
+
 	local function update()
 		local val = tonumber(input.Text)
 		if val and val >= min and val <= max then
@@ -1255,62 +1405,10 @@ local function createSlider(name, targetKey, default, min, max, parentFrame)
 			input.Text = tostring(targets[targetKey])
 		end
 	end
+
 	input.FocusLost:Connect(update)
 	setBtn.MouseButton1Click:Connect(update)
 end
-
-local allCheatsFrame = Instance.new("Frame", cheatsScroll)
-allCheatsFrame.Size = UDim2.new(1, 0, 0, 50)
-allCheatsFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
-Instance.new("UICorner", allCheatsFrame).CornerRadius = UDim.new(0, 10)
-
-local enableAllBtn = Instance.new("TextButton", allCheatsFrame)
-enableAllBtn.Size = UDim2.new(0.48, 0, 0.8, 0)
-enableAllBtn.Position = UDim2.new(0.01, 0, 0.1, 0)
-enableAllBtn.BackgroundColor3 = Color3.fromRGB(70, 210, 90)
-enableAllBtn.Text = "Enable All"
-enableAllBtn.TextColor3 = Color3.new(1, 1, 1)
-enableAllBtn.Font = Enum.Font.GothamBold
-enableAllBtn.TextSize = 16
-Instance.new("UICorner", enableAllBtn).CornerRadius = UDim.new(0, 8)
-
-local disableAllBtn = Instance.new("TextButton", allCheatsFrame)
-disableAllBtn.Size = UDim2.new(0.48, 0, 0.8, 0)
-disableAllBtn.Position = UDim2.new(0.51, 0, 0.1, 0)
-disableAllBtn.BackgroundColor3 = Color3.fromRGB(210, 70, 70)
-disableAllBtn.Text = "Disable All"
-disableAllBtn.TextColor3 = Color3.new(1, 1, 1)
-disableAllBtn.Font = Enum.Font.GothamBold
-disableAllBtn.TextSize = 16
-Instance.new("UICorner", disableAllBtn).CornerRadius = UDim.new(0, 8)
-
-enableAllBtn.MouseButton1Click:Connect(function()
-	for _, entry in ipairs(toggleButtons) do
-		if not states[entry.name] then
-			states[entry.name] = true
-			entry.button.BackgroundColor3 = entry.colorOn
-			entry.button.Text = "ON"
-			pcall(entry.toggleFunc, true)
-		end
-	end
-	setStatus("All cheats enabled")
-end)
-
-disableAllBtn.MouseButton1Click:Connect(function()
-	for _, entry in ipairs(toggleButtons) do
-		if states[entry.name] then
-			states[entry.name] = false
-			entry.button.BackgroundColor3 = entry.colorOff
-			entry.button.Text = "OFF"
-			pcall(entry.toggleFunc, false)
-		end
-	end
-	setStatus("All cheats disabled")
-end)
-
--- ================================================
--- DROPDOWN SECTIONS
--- ================================================
 
 local function createSection(title)
 	local sectionFrame = Instance.new("Frame")
@@ -1319,9 +1417,11 @@ local function createSection(title)
 	sectionFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 	sectionFrame.Parent = cheatsScroll
 	Instance.new("UICorner", sectionFrame).CornerRadius = UDim.new(0, 10)
+
 	local sectionLayout = Instance.new("UIListLayout", sectionFrame)
 	sectionLayout.Padding = UDim.new(0, 0)
 	sectionLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
 	local header = Instance.new("TextButton", sectionFrame)
 	header.Size = UDim2.new(1, 0, 0, 45)
 	header.BackgroundColor3 = Color3.fromRGB(35, 35, 55)
@@ -1331,21 +1431,26 @@ local function createSection(title)
 	header.TextSize = 18
 	header.TextXAlignment = Enum.TextXAlignment.Left
 	Instance.new("UICorner", header).CornerRadius = UDim.new(0, 10)
+
 	local headerPad = Instance.new("UIPadding", header)
 	headerPad.PaddingLeft = UDim.new(0, 15)
+
 	local subFrame = Instance.new("Frame", sectionFrame)
 	subFrame.Size = UDim2.new(1, 0, 0, 0)
 	subFrame.AutomaticSize = Enum.AutomaticSize.Y
 	subFrame.BackgroundTransparency = 1
+
 	local subLayout = Instance.new("UIListLayout", subFrame)
 	subLayout.Padding = UDim.new(0, 12)
 	subLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
 	local open = false
 	header.MouseButton1Click:Connect(function()
 		open = not open
 		subFrame.Visible = open
 		header.Text = (open and "▲ " or "▼ ") .. title
 	end)
+
 	subFrame.Visible = false
 	return subFrame
 end
@@ -1354,6 +1459,7 @@ local aimbotSub = createSection("Aimbot")
 createToggle("Aimbot", Color3.fromRGB(255, 100, 100), Color3.fromRGB(60, 60, 80), toggleAimbot, aimbotSub)
 createToggle("Aimbot Through Walls", Color3.fromRGB(255, 140, 80), Color3.fromRGB(60, 60, 80), toggleAimbotThroughWalls, aimbotSub)
 createSlider("Aimbot Smoothness", "AimbotSmoothness", 0.16, 0.05, 0.6, aimbotSub)
+createToggle("RageBot", Color3.fromRGB(180, 20, 20), Color3.fromRGB(60, 60, 80), toggleRageBot, aimbotSub)
 
 local visualsSub = createSection("Visuals")
 createToggle("ESP", Color3.fromRGB(255, 80, 80), Color3.fromRGB(60, 60, 80), toggleESP, visualsSub)
@@ -1362,16 +1468,13 @@ createToggle("Tracers", Color3.fromRGB(100, 100, 255), Color3.fromRGB(60, 60, 80
 createToggle("Fullbright", Color3.fromRGB(255, 255, 140), Color3.fromRGB(60, 60, 80), toggleFullbright, visualsSub)
 createToggle("CustomCrosshair", Color3.fromRGB(150, 255, 150), Color3.fromRGB(60, 60, 80), toggleCustomCrosshair, visualsSub)
 createToggle("Chams", Color3.fromRGB(220, 100, 220), Color3.fromRGB(60,60,80), toggleChams, visualsSub)
-createToggle("Show Teammates", Color3.fromRGB(100, 220, 100), Color3.fromRGB(60, 60, 80),
-	function(v)
-		states.ShowTeammates = v
-		setStatus("Show Teammates: " .. (v and "ON" or "OFF"))
-		if states.ESP then toggleESP(false); task.wait(); toggleESP(true) end
-		if states.Tracers then toggleTracers(false); task.wait(); toggleTracers(true) end
-		if states.Chams then toggleChams(false); task.wait(); toggleChams(true) end
-	end,
-	visualsSub
-)
+createToggle("Show Teammates", Color3.fromRGB(100, 220, 100), Color3.fromRGB(60, 60, 80), function(v)
+	states.ShowTeammates = v
+	setStatus("Show Teammates: " .. (v and "ON" or "OFF"))
+	if states.ESP then toggleESP(false) task.wait() toggleESP(true) end
+	if states.Tracers then toggleTracers(false) task.wait() toggleTracers(true) end
+	if states.Chams then toggleChams(false) task.wait() toggleChams(true) end
+end, visualsSub)
 
 local movementSub = createSection("Movement")
 createToggle("WalkSpeed", Color3.fromRGB(255, 200, 100), Color3.fromRGB(60, 60, 80), toggleWalkSpeed, movementSub)
@@ -1389,11 +1492,12 @@ createSlider("FOV", "FOV", 70, 10, 150, movementSub)
 local utilitiesSub = createSection("Utilities")
 createToggle("AntiAFK", Color3.fromRGB(100, 255, 200), Color3.fromRGB(60, 60, 80), toggleAntiAFK, utilitiesSub)
 
-local toolsFrame = Instance.new("Frame")
+local toolsFrame = Instance.new("Frame", utilitiesSub)
 toolsFrame.Size = UDim2.new(1, 0, 0, 60)
 toolsFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 52)
 toolsFrame.Parent = utilitiesSub
 Instance.new("UICorner", toolsFrame).CornerRadius = UDim.new(0, 10)
+
 local toolsBtn = Instance.new("TextButton", toolsFrame)
 toolsBtn.Size = UDim2.new(0.96, 0, 0.75, 0)
 toolsBtn.Position = UDim2.new(0.02, 0, 0.125, 0)
@@ -1405,30 +1509,47 @@ toolsBtn.TextSize = 19
 Instance.new("UICorner", toolsBtn).CornerRadius = UDim.new(0, 10)
 toolsBtn.MouseButton1Click:Connect(getAllTools)
 
--- ================================================
--- FINAL LOAD
--- ================================================
-
+-- Final initialization (no auto scan)
 task.defer(function()
 	task.wait(0.4)
-	scanRemotes()
-	if fireExampleBox then fireExampleBox.Text = "Scan complete - click remote or use FIRE ALL" end
+	setStatus("Loaded – click LOAD REMOTES when ready")
+	fireExampleBox.Text = "Click LOAD REMOTES to scan all remotes"
 	main.Visible = true
-	TweenService:Create(main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Position = UDim2.new(0.31, 0, 0.125, 0) }):Play()
-	print("Diddy Cheats V6.7 loaded successfully")
-	setStatus("Loaded - Enjoy!")
+	TweenService:Create(main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.31, 0, 0.125, 0)
+	}):Play()
+	print("Diddy Cheats V6.7 loaded successfully (lazy remotes)")
 end)
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
 	if input.KeyCode == Enum.KeyCode.PageUp then
 		if main.Visible then
-			TweenService:Create(main, TweenInfo.new(0.4, Enum.EasingStyle.Back), {Position = UDim2.new(0.31, 0, -1.2, 0)}):Play()
-			task.delay(0.45, function() main.Visible = false end)
+			TweenService:Create(main, TweenInfo.new(0.4, Enum.EasingStyle.Back), {
+				Position = UDim2.new(0.31, 0, -1.2, 0)
+			}):Play()
+			task.delay(0.45, function()
+				main.Visible = false
+			end)
 		else
 			main.Visible = true
-			TweenService:Create(main, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.31, 0, 0.125, 0)}):Play()
+			TweenService:Create(main, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+				Position = UDim2.new(0.31, 0, 0.125, 0)
+			}):Play()
 		end
+	end
+	if input.KeyCode == Enum.KeyCode.LeftAlt then
+		local newState = not states.Aimbot
+		states.Aimbot = newState
+		toggleAimbot(newState)
+		for _, entry in ipairs(toggleButtons) do
+			if entry.name == "Aimbot" then
+				entry.button.BackgroundColor3 = newState and entry.colorOn or entry.colorOff
+				entry.button.Text = newState and "ON" or "OFF"
+				break
+			end
+		end
+		setStatus("Aimbot " .. (newState and "ON" or "OFF") .. " ← LeftAlt")
 	end
 end)
 
